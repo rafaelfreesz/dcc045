@@ -1,17 +1,5 @@
 # DCC045
 
-### Commit 2: First correction of AFD scheme:
-
-<ul>
-  <li>Improved tokens names (<a href="https://www.englishexperts.com.br/caracteres-especiais-e-de-pontuacao-em-ingles/">Font</a>);</li>
-  <li>Created INT, DOUBLE and REAL tokens for NUMBER;</li>
-  <li>"EOF Exception" label changed to "Ret Lexic Error (Unexpected EOF)";</li>
-  <li>Created Lexic Error state for "Unexpected Entry";</li>
-  <li>Removed wrongs character pumpings for CHAR LITERALs;</li>
-  <li>Alowed only \n, \r ,\f, \t, \a, \b, \o, \v, \\, \' and \" for LITERAL C representations with '\' (<a href="https://stackoverflow.com/questions/18018264/how-do-i-declare-backslash-constant-character-in-c">Font</a>);</li>
-  <li>States renamed for better organization.</li>
-</ul> 
-
 ### Commit 1: AFD scheme presented at 09/29/2022
 
   <ul>
