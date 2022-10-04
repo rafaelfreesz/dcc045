@@ -1,5 +1,12 @@
 # DCC045
 
+### Commit 3: Second correction of AFD scheme:
+<ul>
+  <li>Real number leads to NUMFLOAT;</li>
+  <li>State q49 changed to "Malformed number" error; </li>
+  <li>State 32 removed.</li>
+</ul>
+
 ### Commit 2: First correction of AFD scheme:
 
 <ul>
