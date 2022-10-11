@@ -1,5 +1,11 @@
 # DCC045
 
+### Commit 11/10/2022: Second correction of AFD scheme:
+<ul>
+    <li>First prototype implementation</li>
+    <li>Created SEMICOLON (;) state</li>
+</ul>
+
 ### Commit 3: Second correction of AFD scheme:
 <ul>
   <li>Real number leads to NUMFLOAT;</li>

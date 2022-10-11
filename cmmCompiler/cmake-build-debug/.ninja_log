@@ -1,0 +1,5 @@
+# ninja log v5
+5	101	6871994021966795	CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj	3ca946d1014959cc
+8	86	6872009484820198	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	69d7b48e977565b
+3	85	6872009484820198	CMakeFiles/cmmCompiler.dir/main.c.obj	3e5eb71856d67c97
+86	198	6872009485920423	cmmCompiler.exe	3e643a1ab12b9e90
