@@ -67,6 +67,12 @@ build CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj: C_COMPILER__cmmCompiler_Deb
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
+build CMakeFiles/cmmCompiler.dir/SymbleTable.c.obj: C_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/SymbleTable.c || cmake_object_order_depends_target_cmmCompiler
+  DEP_FILE = CMakeFiles\cmmCompiler.dir\SymbleTable.c.obj.d
+  FLAGS = -g -std=gnu99
+  OBJECT_DIR = CMakeFiles\cmmCompiler.dir
+  OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target cmmCompiler
@@ -75,7 +81,7 @@ build CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj: C_COMPILER__cmmCompiler_Deb
 #############################################
 # Link the executable cmmCompiler.exe
 
-build cmmCompiler.exe: C_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.c.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj
+build cmmCompiler.exe: C_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.c.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj CMakeFiles/cmmCompiler.dir/SymbleTable.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir

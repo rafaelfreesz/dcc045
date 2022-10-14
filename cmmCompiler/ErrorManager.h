@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #define FILENOTFOUND 1
 #define FILENOTSUPPORTED 2
+#define INDEXOUTOFBOUNDS 3
 
 void sendSystemError(int code);
 

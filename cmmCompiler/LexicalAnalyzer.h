@@ -7,7 +7,9 @@
 
 #include "stdio.h"
 #include <string.h>
+#include "SymbleTable.h"
 #include "ErrorManager.h"
+
 #define BUFFERSIZE 10
 #define MAINBUFFER 0
 #define SECONDARYBUFFER 1

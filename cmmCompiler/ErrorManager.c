@@ -15,6 +15,9 @@ void sendSystemError(int code){
         case FILENOTSUPPORTED:
             printf("File not supported\n");
             break;
+        case INDEXOUTOFBOUNDS:
+            printf("Index out of bounds\n");
+            break;
 
 
     }
