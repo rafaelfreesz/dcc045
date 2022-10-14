@@ -13,6 +13,7 @@
 #define BUFFERSIZE 10
 #define MAINBUFFER 0
 #define SECONDARYBUFFER 1
+#define DEFAULTLEXEM -1
 #define TRUE 1
 #define FALSE 0
 
@@ -54,15 +55,14 @@
 
 //Token struct
 typedef struct{
-    char *token;
-    char *lexem;
+    int token,lexemIndex, lexemSize;
 
 }Token;
 
 typedef struct {
     FILE* sourceFile;
     char mainBuffer[BUFFERSIZE], secondaryBuffer[BUFFERSIZE];
-    int referedBuffer, bufferIndex, streamLength;
+    int referedBuffer, bufferIndex, streamLength, eof;
 
 }LexicalAnalyser;
 
@@ -72,12 +72,14 @@ static LexicalAnalyser analyser;
 void buildLexicalAnalyzer(char* fileName);
 void loadStream(int bufferReference);
 int verifyFileConsistence(char* fileName);
-Token nextToken();
+Token* nextToken();
+char *getBufferCharacter(int advance);
 
-int isDigit(char* c);
+int isLetter(char* c);
 int isNumber(char* c);
-
+int isWhiteSpace(char* c);
 
 void printLexicalAnalyser();
+void printToken(Token* token);
 
 #endif //CMMCOMPILER_LEXICALANALYZER_H

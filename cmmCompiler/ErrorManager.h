@@ -9,8 +9,12 @@
 #define FILENOTFOUND 1
 #define FILENOTSUPPORTED 2
 #define INDEXOUTOFBOUNDS 3
+#define UNEXPECTEDENTRY 4
+#define UNEXPECTEDEOF 5
+#define MALFORMEDNUMBER 6
 
 void sendSystemError(int code);
+void sendLexicError(int code);
 
 
 #endif //CMMCOMPILER_ERRORMANAGER_H

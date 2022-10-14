@@ -4,32 +4,21 @@
 
 #include "SymbleTable.h"
 void buildLexemBuffer(){
-    lexemBuffer.lexemBuffer=malloc(BUFFERDELTA);
+    lexemBuffer.lexemBuffer=(char*)malloc(BUFFERDELTA);
     lexemBuffer.bufferLength=BUFFERDELTA;
     lexemBuffer.nextFreeIndex=0;
 }
 
 //Return a lexem from Lexem Buffer by a gived index
-char* getLexem(int index){
+char* getLexem(int lexemIndex, int lexemSize){
 
     //Verifying index bound
-    if(index<lexemBuffer.nextFreeIndex){
-
-        int lexemSize=0;
-        int lexemLimit=index;
-
-        //Giving lexem size to malloc
-        while(lexemBuffer.lexemBuffer[lexemLimit] != '\0'){
-            lexemSize++;
-            lexemLimit++;
-        }
-
-        char* lexem= malloc(lexemSize);
+    if(lexemIndex!=-1){
 
         //Copying lexem from buffer to return lexem
-        int i=0;
-        while(i < lexemSize){
-            lexem[i++]=lexemBuffer.lexemBuffer[index++];
+        char* lexem= malloc(lexemSize);
+        for(int i=lexemIndex,j=0;i<lexemSize;i++,j++){
+            lexem[j]=lexemBuffer.lexemBuffer[i];
         }
 
         return lexem;
@@ -39,22 +28,37 @@ char* getLexem(int index){
     }
     return NULL;
 }
-int pushLexem(char* lexem){
+void pushLexem(char* lexem){
 
     int lexemIndex=0;
-
     while(lexem[lexemIndex]!='\0'){
+
+        //Verify if lexem buffer reached the limit
         if(lexemBuffer.nextFreeIndex==lexemBuffer.bufferLength){
             reallocLexemBuffer();
         }
         lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex++]=lexem[lexemIndex++];
     }
 
-    lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex++]='\0';
+    lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex]='\0';
 
 }
 
 void reallocLexemBuffer(){
     lexemBuffer.lexemBuffer=realloc(lexemBuffer.lexemBuffer,BUFFERDELTA);
     lexemBuffer.bufferLength+=BUFFERDELTA;
+}
+
+
+void printLexemBuffer(){
+    printf("--------------Lexem Buffer Data-----------\n");
+
+    printf("Buffer Length: %d\n", lexemBuffer.bufferLength);
+    printf("Next Free Index: %d\n", lexemBuffer.nextFreeIndex);
+    printf("LexemBuffer: \n");
+
+    for(int i=0;i<lexemBuffer.nextFreeIndex;i++){
+        printf("%c",lexemBuffer.lexemBuffer[i]);
+    }
+    printf("\n");
 }

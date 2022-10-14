@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include "ErrorManager.h"
+
 #define BUFFERDELTA 10
 
 typedef struct {
@@ -18,9 +19,11 @@ typedef struct {
 static LexemBuffer lexemBuffer;
 
 void buildLexemBuffer();
-char* getLexem(int index);
-int pushLexem(char* lexem);
+char* getLexem(int lexemIndex, int lexemSize);
+void pushLexem(char* lexem);
 void reallocLexemBuffer();
+
+void printLexemBuffer();
 
 
 #endif //CMMCOMPILER_SYMBLETABLE_H

@@ -6,7 +6,7 @@
 
 void sendSystemError(int code){
 
-    printf("ERROR %d: ",code);
+    printf("SYSTEM ERROR %d: ",code);
 
     switch (code) {
         case FILENOTFOUND:
@@ -24,4 +24,24 @@ void sendSystemError(int code){
 
     exit(code);
 
+}
+
+void sendLexicError(int code){
+    printf("LEXIC ERROR %d: ",code);
+
+    switch (code) {
+        case UNEXPECTEDENTRY:
+            printf("Unexpected Entry\n");
+            break;
+        case UNEXPECTEDEOF:
+            printf("Unexpected end of file\n");
+            break;
+        case MALFORMEDNUMBER:
+            printf("Malformed number\n");
+            break;
+
+
+    }
+
+    exit(code);
 }
