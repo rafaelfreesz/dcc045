@@ -12,10 +12,10 @@ void sendSystemError(int code){
         case FILENOTFOUND:
             printf("File not Found\n");
             break;
+
         case FILENOTSUPPORTED:
             printf("File not supported\n");
             break;
-
 
     }
 

@@ -6,13 +6,10 @@
 #define CMMCOMPILER_LEXICALANALYZER_H
 
 #include "stdio.h"
-#include <string.h>
 #include "ErrorManager.h"
 #define BUFFERSIZE 10
 #define MAINBUFFER 0
 #define SECONDARYBUFFER 1
-#define TRUE 1
-#define FALSE 0
 
 //Jogar depois pra tabela de símbolos
 #define SEMICOLON 57
@@ -20,7 +17,7 @@
 #define MOD 2
 #define PLUS 3
 #define MULT 4
-#define EOF 5
+#define EOFS 5
 #define NEQ 13
 #define NOT 14
 #define GEQ 16
@@ -48,8 +45,6 @@
 #define NUMINT 46
 #define ID 46
 
-
-
 //Token struct
 typedef struct{
     char *token;
@@ -57,25 +52,28 @@ typedef struct{
 
 }Token;
 
+typedef struct{
+    int referedBuffer;
+    int bufferIndex;
+}BufferRef;
+
 typedef struct {
     FILE* sourceFile;
     char mainBuffer[BUFFERSIZE], secondaryBuffer[BUFFERSIZE];
-    int referedBuffer, bufferIndex, streamLength;
+
+    int blockLength;
+    int positionInMainBuffer;
+    int positionInLexemeBuffer;
+
+    BufferRef bufferRef;
+
 
 }LexicalAnalyser;
 
 static LexicalAnalyser analyser;
 
 //Lexical Analyzer functions
-void buildLexicalAnalyzer(char* fileName);
-void loadStream(int bufferReference);
-int verifyFileConsistence(char* fileName);
-Token nextToken();
-
-int isDigit(char* c);
-int isNumber(char* c);
-
-
-void printLexicalAnalyser();
+void buildLexicalAnalyzer(char* fileName, int isFile);
+int nextToken();
 
 #endif //CMMCOMPILER_LEXICALANALYZER_H

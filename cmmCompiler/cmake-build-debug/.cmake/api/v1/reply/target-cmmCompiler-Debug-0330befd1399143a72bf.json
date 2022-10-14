@@ -96,8 +96,7 @@
 			[
 				0,
 				1,
-				3,
-				5
+				3
 			]
 		},
 		{
@@ -105,8 +104,7 @@
 			"sourceIndexes" : 
 			[
 				2,
-				4,
-				6
+				4
 			]
 		}
 	],
@@ -138,16 +136,6 @@
 		{
 			"backtrace" : 1,
 			"path" : "ErrorManager.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "symbleTable.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"path" : "symbleTable.h",
 			"sourceGroupIndex" : 1
 		}
 	],
