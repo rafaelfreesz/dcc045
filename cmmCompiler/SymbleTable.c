@@ -13,7 +13,7 @@ void buildLexemBuffer(){
 char* getLexem(int lexemIndex, int lexemEnd){
 
     //Verifying index bound
-    if(lexemIndex!=-1){
+    if(lexemIndex!=DEFAULTLEXEM){ //TODO Ao invez de DEFAULTLEXEM, voltar o prórpio caracter
 
         //Copying lexem from buffer to return lexem
         char* lexem= malloc(lexemEnd + 1);

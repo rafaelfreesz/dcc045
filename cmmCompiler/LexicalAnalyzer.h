@@ -11,8 +11,6 @@
 #include "ErrorManager.h"
 
 #define BUFFERSIZE 10
-#define MAINBUFFER 0
-#define SECONDARYBUFFER 1
 #define DEFAULTLEXEM -1
 #define TRUE 1
 #define FALSE 0
@@ -56,13 +54,12 @@
 //Token struct
 typedef struct{
     int token,lexemIndex, lexemSize;
-
 }Token;
 
 typedef struct {
     FILE* sourceFile;
-    char mainBuffer[BUFFERSIZE], secondaryBuffer[BUFFERSIZE];
-    int referedBuffer, bufferIndex, streamLength, eof;
+    char stremBuffer[BUFFERSIZE];
+    int bufferIndex, streamLength, eof;
 
 }LexicalAnalyser;
 
@@ -70,7 +67,7 @@ static LexicalAnalyser analyser;
 
 //Lexical Analyzer functions
 void buildLexicalAnalyzer(char* fileName);
-void loadStream(int bufferReference);
+void loadStream();
 int verifyFileConsistence(char* fileName);
 Token* nextToken();
 char *getBufferCharacter(int advance);

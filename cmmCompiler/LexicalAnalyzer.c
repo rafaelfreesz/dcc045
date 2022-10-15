@@ -13,22 +13,18 @@ void buildLexicalAnalyzer(char* fileName){
         sendSystemError(FILENOTFOUND);
     }
 
-    analyser.referedBuffer=MAINBUFFER;
-    loadStream(analyser.referedBuffer);
+    loadStream();
 
 }
 
-void loadStream(int bufferReference){
+void loadStream() {
 
-    if(bufferReference==MAINBUFFER){
-        analyser.streamLength= fread(analyser.mainBuffer,1,BUFFERSIZE,analyser.sourceFile);
-    }else{
-        analyser.streamLength= fread(analyser.secondaryBuffer,1,BUFFERSIZE,analyser.sourceFile);
-    }
+    analyser.streamLength= fread(analyser.stremBuffer, 1, BUFFERSIZE, analyser.sourceFile);
 
     //Verify if that stream is the last;
     if(analyser.streamLength<BUFFERSIZE){
         analyser.eof=TRUE;
+        analyser.stremBuffer[analyser.streamLength - 1]='\0';
     }
 
     analyser.bufferIndex=0;
@@ -41,6 +37,8 @@ Token* nextToken(){
     int lexemIndex=0;
     short foundToken=FALSE;
     short state=0;
+    LexicalAnalyser *pointer=&analyser;
+
     char* characterFound = getBufferCharacter(TRUE);
 
     while(!foundToken){
@@ -58,19 +56,19 @@ Token* nextToken(){
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound==':'){
                     state=1;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='%'){
                     state=2;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='+'){
                     state=3;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='*'){
                     state=4;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='\0'){
                     state=5;
@@ -78,27 +76,27 @@ Token* nextToken(){
                     //characterFound= getBufferCharacter(TRUE); TODO maybe doesn't work
                 }else if(*characterFound=='{'){
                     state=6;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='}'){
                     state=7;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='['){
                     state=8;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound==']'){
                     state=9;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='('){
                     state=10;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound==')'){
                     state=11;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='!'){
                     state=12;
@@ -132,9 +130,9 @@ Token* nextToken(){
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound==';'){
                     state=57;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
-                }else{ //TODO tratar vazios tambem
+                }else{
                     sendLexicError(UNEXPECTEDENTRY);
                 }
                 break;
@@ -142,77 +140,77 @@ Token* nextToken(){
                 if(*characterFound=='='){
                     state=13;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=14;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 15:
                 if(*characterFound=='='){
                     state=16;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=17;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 18:
                 if(*characterFound=='='){
                     state=20;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=20;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 21:
                 if(*characterFound=='='){
                     state=23;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=22;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 36:
                 if(*characterFound=='|'){
                     state=37;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=38;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 39:
                 if(*characterFound=='&'){
                     state=40;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=41;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 42:
                 if(*characterFound=='>'){
                     state=43;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=44;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 55:
@@ -222,7 +220,7 @@ Token* nextToken(){
                 }else{
                     state=56;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 26:
@@ -235,7 +233,7 @@ Token* nextToken(){
                 }else{
                     state=27;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 25:
@@ -282,7 +280,7 @@ Token* nextToken(){
                 }else if(*characterFound=='"'){
                     state=35;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='\0'){
                     state=30;
                     sendLexicError(UNEXPECTEDEOF);
@@ -313,7 +311,7 @@ Token* nextToken(){
                 }else if(*characterFound=='\''){
                     state=35;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=60;
                     characterFound= getBufferCharacter(TRUE);
@@ -336,7 +334,7 @@ Token* nextToken(){
                 if (*characterFound=='\''){
                     state=35;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(TRUE);
+                    //characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='\0'){
                     state=30;
                     sendLexicError(UNEXPECTEDEOF);
@@ -360,7 +358,7 @@ Token* nextToken(){
                 }else{
                     state=46;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 47:
@@ -390,7 +388,7 @@ Token* nextToken(){
                 }else{
                     state=53;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 51:
@@ -401,7 +399,7 @@ Token* nextToken(){
                 }else{
                     state=54;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 52:
@@ -415,7 +413,7 @@ Token* nextToken(){
                 }else{
                     state=53;
                     foundToken=TRUE;
-                    characterFound= getBufferCharacter(FALSE);
+                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
 
@@ -516,32 +514,28 @@ int isWhiteSpace(char* c){
 char* getBufferCharacter(int advance){
 
     //Testing if buffer reached limit
-    if(analyser.bufferIndex>=BUFFERSIZE){
-        loadStream(MAINBUFFER);
+    if(analyser.bufferIndex==BUFFERSIZE){
+        loadStream();
         analyser.bufferIndex=0;
     }
 
+
     if(advance){
-        return &analyser.mainBuffer[analyser.bufferIndex++];
+        return &analyser.stremBuffer[analyser.bufferIndex++];
     }else{
-        return &analyser.mainBuffer[analyser.bufferIndex];
+        return &analyser.stremBuffer[analyser.bufferIndex];
     }
 }
 
 void printLexicalAnalyser(){
     printf("--------------ALex Data-----------\n");
-    printf("MainBuffer: %s\n",analyser.mainBuffer);
-    printf("SecondaryBuffer: %s\n",analyser.secondaryBuffer);
-
-    if(analyser.referedBuffer==MAINBUFFER) {
-        printf("ReferedBuffer: MAINBUFFER\n");
-    }else{
-        printf("ReferedBuffer: SECONDARYBUFFER\n");
-    }
-
     printf("StreamLength: %d\n",analyser.streamLength);
     printf("BufferIndex: %d\n",analyser.bufferIndex);
-    printf("-------------------------\n");
+    printf("MainBuffer:\n");
+    for(int i=0;i<analyser.streamLength;i++){
+        printf("%c",analyser.stremBuffer[i]);
+    }
+    printf("\n-------------------------\n");
 }
 
 

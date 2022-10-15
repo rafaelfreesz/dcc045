@@ -9,6 +9,7 @@
 #include "ErrorManager.h"
 
 #define BUFFERDELTA 10
+#define DEFAULTLEXEM -1
 
 typedef struct {
     char* lexemBuffer;
