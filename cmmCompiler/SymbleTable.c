@@ -10,16 +10,18 @@ void buildLexemBuffer(){
 }
 
 //Return a lexem from Lexem Buffer by a gived index
-char* getLexem(int lexemIndex, int lexemSize){
+char* getLexem(int lexemIndex, int lexemEnd){
 
     //Verifying index bound
     if(lexemIndex!=-1){
 
         //Copying lexem from buffer to return lexem
-        char* lexem= malloc(lexemSize);
-        for(int i=lexemIndex,j=0;i<lexemSize;i++,j++){
+        char* lexem= malloc(lexemEnd + 1);
+        int j=0;
+        for(int i=lexemIndex; i < lexemEnd; i++,j++){
             lexem[j]=lexemBuffer.lexemBuffer[i];
         }
+        lexem[j]='\0';
 
         return lexem;
 
@@ -37,6 +39,7 @@ void pushLexem(char* lexem){
         if(lexemBuffer.nextFreeIndex==lexemBuffer.bufferLength){
             reallocLexemBuffer();
         }
+
         lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex++]=lexem[lexemIndex++];
     }
 
@@ -49,6 +52,12 @@ void reallocLexemBuffer(){
     lexemBuffer.bufferLength+=BUFFERDELTA;
 }
 
+int getNextFreeLexemIndex(){
+    return lexemBuffer.nextFreeIndex;
+}
+int getBufferLength(){
+    return lexemBuffer.bufferLength;
+}
 
 void printLexemBuffer(){
     printf("--------------Lexem Buffer Data-----------\n");

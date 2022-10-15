@@ -19,9 +19,11 @@ typedef struct {
 static LexemBuffer lexemBuffer;
 
 void buildLexemBuffer();
-char* getLexem(int lexemIndex, int lexemSize);
+char* getLexem(int lexemIndex, int lexemEnd);
 void pushLexem(char* lexem);
 void reallocLexemBuffer();
+int getNextFreeLexemIndex();
+int getBufferLength();
 
 void printLexemBuffer();
 

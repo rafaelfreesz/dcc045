@@ -23,7 +23,7 @@
 #define MOD 2
 #define PLUS 3
 #define MULT 4
-#define EOF 5
+#define CMMEOF 5
 #define NEQ 13
 #define NOT 14
 #define GEQ 16
@@ -79,7 +79,10 @@ int isLetter(char* c);
 int isNumber(char* c);
 int isWhiteSpace(char* c);
 
+
+//Testing Funcions
 void printLexicalAnalyser();
 void printToken(Token* token);
+char* translateState(int state);
 
 #endif //CMMCOMPILER_LEXICALANALYZER_H

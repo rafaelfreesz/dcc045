@@ -36,9 +36,8 @@ void loadStream(int bufferReference){
 }
 
 Token* nextToken(){
-    Token *token= malloc(sizeof(Token));
-
-    char *lexem=(char*)malloc(BUFFERSIZE);
+    Token* token = malloc(sizeof(Token));
+    char *lexem=(char*)malloc(BUFFERSIZE); //TODO Dinamizar tambem o tamanho desse string, com o realloc
     int lexemIndex=0;
     short foundToken=FALSE;
     short state=0;
@@ -347,7 +346,7 @@ Token* nextToken(){
                 }
                 break;
             case 45:
-                if (isNumber(*characterFound)){
+                if (isNumber(characterFound)){
                     lexem[lexemIndex++]=*characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='.'){
@@ -375,7 +374,7 @@ Token* nextToken(){
                 }
                 break;
             case 49:
-                if(isNumber(*characterFound)){
+                if(isNumber(characterFound)){
                     state=50;
                     lexem[lexemIndex++]=*characterFound;
                     characterFound= getBufferCharacter(TRUE);
@@ -385,7 +384,7 @@ Token* nextToken(){
                 }
                 break;
             case 50:
-                if(isNumber(*characterFound)){
+                if(isNumber(characterFound)){
                     lexem[lexemIndex++]=*characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else{
@@ -395,7 +394,7 @@ Token* nextToken(){
                 }
                 break;
             case 51:
-                if(isNumber(*characterFound)){
+                if(isNumber(characterFound)){
                     state=52;
                     lexem[lexemIndex++]=*characterFound;
                     characterFound= getBufferCharacter(TRUE);
@@ -406,7 +405,7 @@ Token* nextToken(){
                 }
                 break;
             case 52:
-                if(isNumber(*characterFound)){
+                if(isNumber(characterFound)){
                     lexem[lexemIndex++]=*characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='E'){
@@ -428,9 +427,9 @@ Token* nextToken(){
 
     if(state==46 || state == 53 || state == 56 || state == 35) {
         lexem[lexemIndex]='\0';
-        token->lexemIndex = lexemBuffer.nextFreeIndex;
+        token->lexemIndex = getNextFreeLexemIndex();
         pushLexem(lexem);
-        token->lexemSize=lexemBuffer.nextFreeIndex;
+        token->lexemSize=getNextFreeLexemIndex()-token->lexemIndex;
     }else{
         token->lexemIndex=DEFAULTLEXEM;
     }
@@ -548,14 +547,79 @@ void printLexicalAnalyser(){
 
 void printToken(Token* token){
     printf("--------------Token Data-----------\n");
-    printf("Token number: %d\n",token->token);
+    printf("Token number: %d, %s\n",token->token, translateState(token->token));
     printf("Lexem Buffer Index: %d\n",token->lexemIndex);
     printf("Lexem Buffer Size: %d\n",token->lexemSize);
     printf("Lexem Buffer:\n");
 
-    char* tokemLexem= getLexem(token->lexemIndex,token->lexemSize);
+    char* tokemLexem= getLexem(token->lexemIndex,token->lexemIndex+token->lexemSize);
     printf("%s\n",tokemLexem);
 
     printf("-------------------------\n");
     free(tokemLexem);
+}
+char* translateState(int state){
+    switch (state) {
+        case 1:
+            return "COLON";
+        case 2:
+            return "MOD";
+        case 3:
+            return "PLUS";
+        case 4:
+            return "MULT";
+        case 5:
+            return "EOF";
+        case 14:
+            return "NOT";
+        case 13:
+            return "NEQ";
+        case 17:
+            return "GREAT";
+        case 16:
+            return "GEQ";
+        case 20:
+            return "LEQ";
+        case 19:
+            return "LESS";
+        case 23:
+            return "EQ";
+        case 22:
+            return "ASSIGN";
+        case 35:
+            return "LITERAL";
+        case 11:
+            return "RIGHTPARENTHESES";
+        case 10:
+            return "LEFTPARENTHESES";
+        case 9:
+            return "RIGHTBRACKET";
+        case 8:
+            return "LEFTBRACKET";
+        case 7:
+            return "RIGHTBRACE";
+        case 6:
+            return "LEFTBRACE";
+        case 56:
+            return "ID OR RESERVED WORD";
+        case 54:
+            return "POINT";
+        case 53:
+            return "NUMFLOAT";
+        case 46:
+            return "NUMINT";
+        case 43:
+            return "POINTER";
+        case 44:
+            return "MINUS";
+        case 40:
+            return "AND";
+        case 41:
+            return "AMBERSAND";
+        case 37:
+            return "OR";
+        case 38:
+            return "PIPE";
+
+    }
 }

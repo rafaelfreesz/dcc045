@@ -9,14 +9,13 @@ int main(int argc, char *argv[ ]) {
     buildLexicalAnalyzer("text.cmm");
     buildLexemBuffer();
 
-
-
     Token* token=nextToken();
 
-    while(token->token!=EOF){
+    while(token->token!=CMMEOF){
         printLexemBuffer();
         printToken(token);
-        free(token);
+        //free(token);
+        token=nextToken();
     }
 
 
