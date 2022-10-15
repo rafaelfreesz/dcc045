@@ -56,47 +56,36 @@ Token* nextToken(){
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound==':'){
                     state=1;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='%'){
                     state=2;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='+'){
                     state=3;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='*'){
                     state=4;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='\0'){
                     state=5;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE); TODO maybe doesn't work
                 }else if(*characterFound=='{'){
                     state=6;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='}'){
                     state=7;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='['){
                     state=8;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound==']'){
                     state=9;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='('){
                     state=10;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound==')'){
                     state=11;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else if(*characterFound=='!'){
                     state=12;
@@ -130,7 +119,6 @@ Token* nextToken(){
                     characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound==';'){
                     state=57;
-                    //characterFound= getBufferCharacter(TRUE);
                     foundToken=TRUE;
                 }else{
                     sendLexicError(UNEXPECTEDENTRY);
@@ -140,77 +128,63 @@ Token* nextToken(){
                 if(*characterFound=='='){
                     state=13;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=14;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 15:
                 if(*characterFound=='='){
                     state=16;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=17;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 18:
                 if(*characterFound=='='){
                     state=20;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=20;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 21:
                 if(*characterFound=='='){
                     state=23;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=22;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 36:
                 if(*characterFound=='|'){
                     state=37;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=38;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 39:
                 if(*characterFound=='&'){
                     state=40;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=41;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 42:
                 if(*characterFound=='>'){
                     state=43;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=44;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 55:
@@ -220,7 +194,6 @@ Token* nextToken(){
                 }else{
                     state=56;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 26:
@@ -233,7 +206,6 @@ Token* nextToken(){
                 }else{
                     state=27;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 25:
@@ -280,7 +252,6 @@ Token* nextToken(){
                 }else if(*characterFound=='"'){
                     state=35;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='\0'){
                     state=30;
                     sendLexicError(UNEXPECTEDEOF);
@@ -311,7 +282,6 @@ Token* nextToken(){
                 }else if(*characterFound=='\''){
                     state=35;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else{
                     state=60;
                     characterFound= getBufferCharacter(TRUE);
@@ -334,7 +304,6 @@ Token* nextToken(){
                 if (*characterFound=='\''){
                     state=35;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(TRUE);
                 }else if(*characterFound=='\0'){
                     state=30;
                     sendLexicError(UNEXPECTEDEOF);
@@ -358,7 +327,6 @@ Token* nextToken(){
                 }else{
                     state=46;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 47:
@@ -388,7 +356,6 @@ Token* nextToken(){
                 }else{
                     state=53;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 51:
@@ -399,7 +366,6 @@ Token* nextToken(){
                 }else{
                     state=54;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
             case 52:
@@ -413,7 +379,6 @@ Token* nextToken(){
                 }else{
                     state=53;
                     foundToken=TRUE;
-                    //characterFound= getBufferCharacter(FALSE);
                 }
                 break;
 
