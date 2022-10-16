@@ -70,16 +70,17 @@ void buildLexicalAnalyzer(char* fileName);
 void loadStream();
 int verifyFileConsistence(char* fileName);
 Token* nextToken();
-char *getBufferCharacter(int advance);
+char getBufferCharacter(int advance);
 
-int isLetter(char* c);
-int isNumber(char* c);
-int isWhiteSpace(char* c);
+int isLetter(char c);
+int isNumber(char c);
+int isWhiteSpace(char c);
 
 
 //Testing Funcions
 void printLexicalAnalyser();
 void printToken(Token* token);
 char* translateState(int state);
+LexicalAnalyser * getALexPointer();
 
 #endif //CMMCOMPILER_LEXICALANALYZER_H

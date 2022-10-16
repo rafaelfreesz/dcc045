@@ -21,7 +21,7 @@ static LexemBuffer lexemBuffer;
 
 void buildLexemBuffer();
 char* getLexem(int lexemIndex, int lexemEnd);
-void pushLexem(char* lexem);
+void pushLexem(char *lexem, int lexemSize);
 void reallocLexemBuffer();
 int getNextFreeLexemIndex();
 int getBufferLength();

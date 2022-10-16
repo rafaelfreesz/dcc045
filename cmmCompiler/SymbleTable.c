@@ -26,30 +26,30 @@ char* getLexem(int lexemIndex, int lexemEnd){
         return lexem;
 
     }else{
-        sendSystemError(INDEXOUTOFBOUNDS);
+        //sendSystemError(INDEXOUTOFBOUNDS);
     }
     return NULL;
 }
-void pushLexem(char* lexem){
+void pushLexem(char *lexem, int lexemSize) {
 
-    int lexemIndex=0;
-    while(lexem[lexemIndex]!='\0'){
+    LexemBuffer * pointer=&lexemBuffer;//TODO APAGAR
 
-        //Verify if lexem buffer reached the limit
-        if(lexemBuffer.nextFreeIndex==lexemBuffer.bufferLength){
-            reallocLexemBuffer();
-        }
-
-        lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex++]=lexem[lexemIndex++];
+    //Verify if lexem buffer reached the limit
+    if(lexemBuffer.nextFreeIndex+lexemSize>lexemBuffer.bufferLength){
+        reallocLexemBuffer();
     }
 
-    lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex]='\0';
+    for(int i=0;i<lexemSize;i++){
+        lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex++]=lexem[i];
+    }
+
+    lexemBuffer.lexemBuffer[lexemBuffer.nextFreeIndex]='_';
 
 }
 
 void reallocLexemBuffer(){
-    lexemBuffer.lexemBuffer=realloc(lexemBuffer.lexemBuffer,BUFFERDELTA);
     lexemBuffer.bufferLength+=BUFFERDELTA;
+    lexemBuffer.lexemBuffer=realloc(lexemBuffer.lexemBuffer,lexemBuffer.bufferLength);
 }
 
 int getNextFreeLexemIndex(){
