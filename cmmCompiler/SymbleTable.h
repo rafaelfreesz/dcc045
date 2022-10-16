@@ -10,7 +10,9 @@
 
 #define BUFFERDELTA 10
 #define DEFAULTLEXEM -1
-
+/*
+ * TODO Três tabelas de símbolos: Palavras reservadas, identificadores e literais;
+ * */
 typedef struct {
     char* lexemBuffer;
     int bufferLength;

@@ -119,6 +119,9 @@ Token* nextToken(){
                 }else if(characterFound==';'){
                     state=57;
                     foundToken=TRUE;
+                }else if(characterFound==','){
+                    state=58;
+                    foundToken=TRUE;
                 }else{
                     sendLexicError(UNEXPECTEDENTRY);
                 }
@@ -540,7 +543,7 @@ char* translateState(int state){
         case 4:
             return "MULT";
         case 5:
-            return "EOF";
+            return "CMMEOF";
         case 14:
             return "NOT";
         case 13:
@@ -591,6 +594,10 @@ char* translateState(int state){
             return "OR";
         case 38:
             return "PIPE";
+        case 57:
+            return "SEMICOLON";
+        case 58:
+            return "COMMA";
 
     }
 }
