@@ -59,7 +59,7 @@ typedef struct{
 typedef struct {
     FILE* sourceFile;
     char stremBuffer[BUFFERSIZE];
-    int bufferIndex, streamLength, eof;
+    int bufferIndex, streamLength;
 
 }LexicalAnalyser;
 

@@ -23,7 +23,6 @@ void loadStream() {
 
     //Verify if that stream is the last;
     if(analyser.streamLength<BUFFERSIZE){
-        analyser.eof=TRUE;
         analyser.stremBuffer[analyser.streamLength]='\0';
     }
 

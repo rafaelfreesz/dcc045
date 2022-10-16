@@ -65,3 +65,6 @@
 117	255	6875872345867533	cmmCompiler.exe	ab733a5bd9447de1
 2	112	6875875643413070	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	69d7b48e977565b
 112	234	6875875644593367	cmmCompiler.exe	ab733a5bd9447de1
+2	100	6875878938496082	CMakeFiles/cmmCompiler.dir/main.c.obj	3e5eb71856d67c97
+7	142	6875878938906182	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	69d7b48e977565b
+142	275	6875878940196508	cmmCompiler.exe	ab733a5bd9447de1
