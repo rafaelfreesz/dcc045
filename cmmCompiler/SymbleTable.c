@@ -35,7 +35,7 @@ void pushLexem(char *lexem, int lexemSize) {
     LexemBuffer * pointer=&lexemBuffer;//TODO APAGAR
 
     //Verify if lexem buffer reached the limit
-    if(lexemBuffer.nextFreeIndex+lexemSize>lexemBuffer.bufferLength){
+    while(lexemBuffer.nextFreeIndex+lexemSize>lexemBuffer.bufferLength){
         reallocLexemBuffer();
     }
 
@@ -58,7 +58,9 @@ int getNextFreeLexemIndex(){
 int getBufferLength(){
     return lexemBuffer.bufferLength;
 }
-
+LexemBuffer * getLexemBuffer(){
+    return &lexemBuffer;
+}
 void printLexemBuffer(){
     printf("--------------Lexem Buffer Data-----------\n");
 

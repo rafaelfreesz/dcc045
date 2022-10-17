@@ -27,6 +27,7 @@ void pushLexem(char *lexem, int lexemSize);
 void reallocLexemBuffer();
 int getNextFreeLexemIndex();
 int getBufferLength();
+LexemBuffer * getLexemBuffer();
 
 void printLexemBuffer();
 

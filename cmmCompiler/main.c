@@ -4,8 +4,9 @@
 
 int main(int argc, char *argv[ ]) {
 
-    buildLexicalAnalyzer("text3.cmm");
+    buildLexicalAnalyzer("text2.cmm");
     LexicalAnalyser * pointer =getALexPointer(); //TODO apagar
+    LexemBuffer  * lbPointer= getLexemBuffer();
     buildLexemBuffer();
 
     Token* token=nextToken();

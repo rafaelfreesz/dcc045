@@ -32,7 +32,7 @@ void loadStream() {
 
 Token* nextToken(){
     Token* token = malloc(sizeof(Token));
-    char *lexem=(char*)malloc(BUFFERSIZE); //TODO Dinamizar tambem o tamanho desse string, com o realloc
+    char *lexem=(char*)malloc(1000); //TODO Dinamizar tambem o tamanho desse string, com o realloc
     int lexemIndex=0;
     short foundToken=FALSE;
     short state=0;
@@ -103,9 +103,11 @@ Token* nextToken(){
                     characterFound= getBufferCharacter(TRUE);
                 }else if(characterFound=='"'){
                     state=31;
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(characterFound=='\''){
                     state=33;
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(characterFound=='|'){
                     state=36;
@@ -220,19 +222,10 @@ Token* nextToken(){
                 }
                 break;
             case 25:
-                if (characterFound=='/'){
-                    state=24;
-                    characterFound= getBufferCharacter(TRUE);
-                }else{
-                    characterFound= getBufferCharacter(TRUE);
-                }
-                break;
-            case 24:
-                if (characterFound=='n'){
+                if (characterFound=='\n'){
                     state=0;
                     characterFound= getBufferCharacter(TRUE);
                 }else{
-                    state=25;
                     characterFound= getBufferCharacter(TRUE);
                 }
                 break;
@@ -259,14 +252,17 @@ Token* nextToken(){
             case 31:
                 if (characterFound=='\\'){
                     state=32;
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(characterFound=='"'){
                     state=35;
+                    lexem[lexemIndex++]=characterFound;
                     foundToken=TRUE;
                 }else if(characterFound=='\0'){
                     state=30;
                     sendLexicError(UNEXPECTEDEOF);
                 }else{
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }
                 break;
@@ -274,6 +270,7 @@ Token* nextToken(){
                 if (characterFound=='b' || characterFound=='0'|| characterFound=='v'|| characterFound=='\\'|| characterFound=='"'
                      || characterFound=='n'|| characterFound=='r'|| characterFound=='f'|| characterFound=='t'|| characterFound=='a'){
                     state=31;
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }else if(characterFound=='\0'){
                     state=30;
@@ -292,9 +289,11 @@ Token* nextToken(){
                     sendLexicError(UNEXPECTEDEOF);
                 }else if(characterFound=='\''){
                     state=35;
+                    lexem[lexemIndex++]=characterFound;
                     foundToken=TRUE;
                 }else{
                     state=60;
+                    lexem[lexemIndex++]=characterFound;
                     characterFound= getBufferCharacter(TRUE);
                 }
                 break;
