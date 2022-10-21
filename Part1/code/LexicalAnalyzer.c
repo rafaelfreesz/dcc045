@@ -1,11 +1,15 @@
-//
-// Created by Rafael on 10/11/2022.
-//
-
 #include "LexicalAnalyzer.h"
+#include "SymbolTable.h"
+
+//Declare variables of the analyser and symbolTables
+static LexicalAnalyser analyser;
+static SymbolTable* reservedWordsSymbolTable;
+static SymbolTable* literalsSymbolTable;
+static SymbolTable* identifiersSymbolTable;
 
 
-void buildLexicalAnalyzer(char* fileName){
+//Function to build Lexical Analyzer
+void buildLexicalAnalyzer(const char* fileName){
 
     verifyFileConsistence(fileName);
 
@@ -13,10 +17,58 @@ void buildLexicalAnalyzer(char* fileName){
         sendSystemError(FILENOTFOUND);
     }
 
+    buildLexemBuffer();
+    buildSymbolTables();
     loadStream();
+    analyser.lineCounter=1;
 
 }
 
+//Destructor of Lexical analyser and the tables
+void deleteLexicalAnalyzer(){
+
+    delete reservedWordsSymbolTable;
+    delete literalsSymbolTable;
+    delete identifiersSymbolTable;
+    deleteLexemBuffer();
+}
+
+//Function to build Symbol Tables
+void buildSymbolTables(){
+
+    //Reserved words symbol table
+    reservedWordsSymbolTable = new SymbolTable();
+    reservedWordsSymbolTable->insertKey("typedef", TYPEDEF);
+    reservedWordsSymbolTable->insertKey("struct", STRUCT);
+    reservedWordsSymbolTable->insertKey("long", LONG);
+    reservedWordsSymbolTable->insertKey("int", INT);
+    reservedWordsSymbolTable->insertKey("float", FLOAT);
+    reservedWordsSymbolTable->insertKey("bool", BOOL);
+    reservedWordsSymbolTable->insertKey("char", CHAR);
+    reservedWordsSymbolTable->insertKey("double", DOUBLE);
+    reservedWordsSymbolTable->insertKey("if", IF);
+    reservedWordsSymbolTable->insertKey("while", WHILE);
+    reservedWordsSymbolTable->insertKey("switch", SWITCH);
+    reservedWordsSymbolTable->insertKey("break", BREAK);
+    reservedWordsSymbolTable->insertKey("print", PRINT);
+    reservedWordsSymbolTable->insertKey("readln", READLN);
+    reservedWordsSymbolTable->insertKey("return", RETURN);
+    reservedWordsSymbolTable->insertKey("throw", THROW);
+    reservedWordsSymbolTable->insertKey("try", TRY);
+    reservedWordsSymbolTable->insertKey("catch", CATCH);
+    reservedWordsSymbolTable->insertKey("case", CASE);
+    reservedWordsSymbolTable->insertKey("for", FOR);
+
+    //Identifiers symbol table
+    identifiersSymbolTable = new SymbolTable();
+
+    //Literals symbol table
+    literalsSymbolTable = new SymbolTable();
+
+
+}
+
+//Updating stream with BUFFERSIZE characters
 void loadStream() {
 
     analyser.streamLength= (int)fread(analyser.stremBuffer, 1, BUFFERSIZE, analyser.sourceFile);
@@ -30,29 +82,43 @@ void loadStream() {
 
 }
 
+//Search and Return the next required token
 Token* nextToken(){
-    Token* token = malloc(sizeof(Token));
-    char *lexem=(char*)malloc(1000); //TODO Dinamizar tambem o tamanho desse string, com o realloc
-    int lexemIndex=0;
-    short foundToken=FALSE;
-    short state=0;
-    LexicalAnalyser *pointer=&analyser;//TODO APAGAR
 
-    char characterFound = getBufferCharacter(TRUE);
+    Token* token = (Token*)malloc(sizeof(Token));
+    
+    size_t lexemSize =BUFFERDELTA;
+    char *lexem=(char*)malloc(lexemSize);
+    size_t lexemIndex=0;
+    size_t foundToken=FALSE;
+    size_t state=0;
 
+    char characterFound = getBufferCharacter(ADVANCE);
+
+    //Lookup the next token from a deterministic automaton
     while(!foundToken){
+        
+        //Realloc lexem string if needed
+        if(lexemIndex==lexemSize){
+            lexemSize+=BUFFERDELTA;
+            lexem=(char*) realloc(lexem, lexemSize);
+        }
+
+        //Count up lines
+        analyser.lineCounter+=(characterFound=='\n');
+        
         switch (state) {
             case 0:
                 if(isNumber(characterFound)){
                     state=45;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(isLetter(characterFound)){
                     state=55;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(isWhiteSpace(characterFound)){
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound==':'){
                     state=1;
                     foundToken=TRUE;
@@ -88,36 +154,39 @@ Token* nextToken(){
                     foundToken=TRUE;
                 }else if(characterFound=='!'){
                     state=12;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='>'){
                     state=15;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='<'){
                     state=18;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='='){
                     state=21;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='/'){
                     state=26;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='"'){
                     state=31;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='\''){
                     state=33;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='|'){
                     state=36;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='&'){
                     state=39;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='-'){
                     state=42;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
+                }else if(characterFound=='.'){
+                    state=51;
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound==';'){
                     state=57;
                     foundToken=TRUE;
@@ -125,7 +194,9 @@ Token* nextToken(){
                     state=58;
                     foundToken=TRUE;
                 }else{
-                    sendLexicError(UNEXPECTEDENTRY);
+                    state=49;
+                    sendLexicError(UNEXPECTEDENTRY,analyser.lineCounter);
+                    foundToken=TRUE;        
                 }
                 break;
             case 12:
@@ -201,7 +272,7 @@ Token* nextToken(){
             case 55:
                 if(isLetter(characterFound) || isNumber(characterFound)){
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=56;
                     foundToken=TRUE;
@@ -211,10 +282,10 @@ Token* nextToken(){
             case 26:
                 if(characterFound=='*'){
                     state=29;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if (characterFound=='/'){
                     state=25;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=27;
                     foundToken=TRUE;
@@ -224,46 +295,48 @@ Token* nextToken(){
             case 25:
                 if (characterFound=='\n'){
                     state=0;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }
                 break;
             case 29:
                 if (characterFound=='*'){
                     state=28;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF,analyser.lineCounter);
+                    foundToken=TRUE;
                 }else{
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }
                 break;
             case 28:
                 if (characterFound=='\\'){
                     state=0;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=29;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }
                 break;
             case 31:
                 if (characterFound=='\\'){
                     state=32;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='"'){
                     state=35;
                     lexem[lexemIndex++]=characterFound;
                     foundToken=TRUE;
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF, analyser.lineCounter);
+                    foundToken=TRUE;
                 }else{
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }
                 break;
             case 32:
@@ -271,22 +344,25 @@ Token* nextToken(){
                      || characterFound=='n'|| characterFound=='r'|| characterFound=='f'|| characterFound=='t'|| characterFound=='a'){
                     state=31;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF, analyser.lineCounter);
+                    foundToken=TRUE;
                 }else{
                     state=49;
-                    sendLexicError(UNEXPECTEDENTRY);
+                    sendLexicError(UNEXPECTEDENTRY, analyser.lineCounter);
+                    foundToken=TRUE;
                 }
                 break;
             case 33:
                 if (characterFound=='\\'){
                     state=34;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF,analyser.lineCounter);
+                    foundToken=TRUE;
                 }else if(characterFound=='\''){
                     state=35;
                     lexem[lexemIndex++]=characterFound;
@@ -294,20 +370,22 @@ Token* nextToken(){
                 }else{
                     state=60;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }
                 break;
             case 34:
                 if (characterFound=='b' || characterFound=='0'|| characterFound=='v'|| characterFound=='\\'|| characterFound=='"'
                     || characterFound=='n'|| characterFound=='r'|| characterFound=='f'|| characterFound=='t'|| characterFound=='a'){
                     state=31;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF,analyser.lineCounter);
+                    foundToken=TRUE;
                 }else{
                     state=49;
-                    sendLexicError(UNEXPECTEDENTRY);
+                    sendLexicError(UNEXPECTEDENTRY,analyser.lineCounter);
+                    foundToken=TRUE;
                 }
                 break;
             case 60:
@@ -316,24 +394,26 @@ Token* nextToken(){
                     foundToken=TRUE;
                 }else if(characterFound=='\0'){
                     state=30;
-                    sendLexicError(UNEXPECTEDEOF);
+                    sendLexicError(UNEXPECTEDEOF,analyser.lineCounter);
+                    foundToken=TRUE;
                 }else{
                     state=49;
-                    sendLexicError(UNEXPECTEDENTRY);
+                    sendLexicError(UNEXPECTEDENTRY,analyser.lineCounter);
+                    foundToken=TRUE;
                 }
                 break;
             case 45:
                 if (isNumber(characterFound)){
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='.'){
                     state=51;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='E'){
                     state=47;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=46;
                     foundToken=TRUE;
@@ -341,29 +421,31 @@ Token* nextToken(){
                 }
                 break;
             case 47:
-                if(characterFound=='+'){
+                if(characterFound=='+' || characterFound=='-'){
                     state=49;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=48;
-                    sendLexicError(MALFORMEDNUMBER);
+                    sendLexicError(MALFORMEDNUMBER,analyser.lineCounter);
+                    foundToken=TRUE;
                 }
                 break;
             case 49:
                 if(isNumber(characterFound)){
                     state=50;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=48;
-                    sendLexicError(MALFORMEDNUMBER);
+                    sendLexicError(MALFORMEDNUMBER,analyser.lineCounter);
+                    foundToken=TRUE;
                 }
                 break;
             case 50:
                 if(isNumber(characterFound)){
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=53;
                     foundToken=TRUE;
@@ -374,7 +456,7 @@ Token* nextToken(){
                 if(isNumber(characterFound)){
                     state=52;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=54;
                     foundToken=TRUE;
@@ -384,11 +466,11 @@ Token* nextToken(){
             case 52:
                 if(isNumber(characterFound)){
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else if(characterFound=='E'){
                     state=47;
                     lexem[lexemIndex++]=characterFound;
-                    characterFound= getBufferCharacter(TRUE);
+                    characterFound= getBufferCharacter(ADVANCE);
                 }else{
                     state=53;
                     foundToken=TRUE;
@@ -401,14 +483,27 @@ Token* nextToken(){
 
 
     token->token=state;
+    lexem[lexemIndex]='\0';
+    token->lexemIndex = getNextFreeLexemIndex();
+    token->lexemSize=lexemIndex;
 
-    if(state==46 || state == 53 || state == 56 || state == 35) {
-        lexem[lexemIndex]='\0';
-        token->lexemIndex = getNextFreeLexemIndex();
-        token->lexemSize=lexemIndex;
+    if(state!=UNEXPECTEDEOF && state!=UNEXPECTEDENTRY && state!=MALFORMEDNUMBER){
         pushLexem(lexem, token->lexemSize);
-    }else{
-        token->lexemIndex=DEFAULTLEXEM;
+    }
+    
+
+    const char* tokenLexem = getLexem(token->lexemIndex, token->lexemIndex + token->lexemSize);
+    if(state == ID){
+
+        token->token = reservedWordsSymbolTable->identifierOrReservedWord(tokenLexem);
+
+        //If it is a identifier
+        if(token->token < TYPEDEF || token->token > FOR) identifiersSymbolTable->insertKey(tokenLexem, ID);  
+
+    }else if(state == LITERAL){
+
+        literalsSymbolTable->insertKey(tokenLexem, LITERAL);
+    
     }
 
     free(lexem);
@@ -416,69 +511,35 @@ Token* nextToken(){
 
 }
 
-int verifyFileConsistence(char* fileName){
+//Testing if file has a consistent name
+void verifyFileConsistence(const char* fileName){
 
-    int i=0;
-    int state=0;
-    char c= fileName[i];
+    const char *lastDotOccurrence  = strrchr(fileName, '.');
 
-    while(state!=5 && state!=6){
-        switch (state) {
-            case 0:
-                if(c=='.'){
-                    state=1;
-                }else if(!isNumber(c) && !isLetter(c)){
-                    state=6;
-                }
-                break;
-            case 1:
-                if(c=='c'){
-                    state=2;
-                }else{
-                    state=6;
-                }
-                break;
-            case 2:
-                if(c=='m'){
-                    state=3;
-                }else{
-                    state=6;
-                }
-                break;
-            case 3:
-                if(c=='m'){
-                    state=4;
-                }else{
-                    state=6;
-                }
-                break;
+    if(lastDotOccurrence) { //If file has extension
 
-            case 4:
-                if(c=='\0'){
-                    state=5;
-                }else{
-                    state=6;
-                }
-                break;
-        }
-        c=fileName[++i];
+        //Other files are not supported
+        if((strcmp(lastDotOccurrence, ".cmm") != 0)) sendSystemError(FILENOTSUPPORTED);
+
     }
-
-    if(state==6){
-        sendSystemError(FILENOTSUPPORTED);
+    
+    //Check if the file was open successfully
+    if((analyser.sourceFile= fopen(fileName,"r"))==NULL){
+        sendSystemError(FILENOTFOUND);
     }
 
 }
 
-
-int isLetter(char c){
+//Verify and return if char c is a Letter
+size_t isLetter(char c){
     if((c>64 && c<91) || (c>96 && c<123)){
         return TRUE;
     }
     return FALSE;
 }
 
-int isNumber(char c){
+//Verify and return if char c is a Number
+size_t isNumber(char c){
     if(c>47 && c<58){
         return TRUE;
     }
@@ -486,11 +547,13 @@ int isNumber(char c){
 }
 
 
-int isWhiteSpace(char c){
+//Verify and return if char c is a white space
+size_t isWhiteSpace(char c){
     return (c==' ' || c=='\t' || c=='\n' || c=='\r');
 }
 
-char getBufferCharacter(int advance){
+//Return the next character from buffer
+char getBufferCharacter(size_t advance){
 
     //Testing if buffer reached limit
     if(analyser.bufferIndex==BUFFERSIZE){
@@ -498,7 +561,7 @@ char getBufferCharacter(int advance){
         analyser.bufferIndex=0;
     }
 
-
+    //If advance, consume the next character
     if(advance){
         return analyser.stremBuffer[analyser.bufferIndex++];
     }else{
@@ -506,100 +569,18 @@ char getBufferCharacter(int advance){
     }
 }
 
-void printLexicalAnalyser(){
-    printf("--------------ALex Data-----------\n");
-    printf("StreamLength: %d\n",analyser.streamLength);
-    printf("BufferIndex: %d\n",analyser.bufferIndex);
-    printf("StreamBuffer:\n");
-    for(int i=0;i<analyser.streamLength;i++){
-        printf("%c",analyser.stremBuffer[i]);
-    }
-    printf("\n-------------------------\n");
+//Returning a pointer to Reserverd Words Symbol Table
+SymbolTable* getReservedWordsSymbolTablePointer(){
+    return reservedWordsSymbolTable;
+}
+//Returning a pointer to Literals Symbol Table
+SymbolTable* getLiteralsSymbolTable(){
+    return literalsSymbolTable;
+}
+//Returning a pointer to Identifiers Symbol Table
+SymbolTable* getIdentifiersSymbolTable(){
+    return identifiersSymbolTable;
 }
 
 
-void printToken(Token* token){
-    printf("--------------Token Data-----------\n");
-    printf("Token number: %d, %s\n",token->token, translateState(token->token));
-    printf("Lexem Buffer Index: %d\n",token->lexemIndex);
-    printf("Lexem Buffer Size: %d\n",token->lexemSize);
-    printf("Lexem Buffer:\n");
 
-    char* tokemLexem= getLexem(token->lexemIndex,token->lexemIndex+token->lexemSize);
-    printf("%s\n",tokemLexem);
-
-    printf("-------------------------\n");
-    free(tokemLexem);
-}
-char* translateState(int state){
-    switch (state) {
-        case 1:
-            return "COLON";
-        case 2:
-            return "MOD";
-        case 3:
-            return "PLUS";
-        case 4:
-            return "MULT";
-        case 5:
-            return "CMMEOF";
-        case 14:
-            return "NOT";
-        case 13:
-            return "NEQ";
-        case 17:
-            return "GREAT";
-        case 16:
-            return "GEQ";
-        case 20:
-            return "LEQ";
-        case 19:
-            return "LESS";
-        case 23:
-            return "EQ";
-        case 22:
-            return "ASSIGN";
-        case 35:
-            return "LITERAL";
-        case 11:
-            return "RIGHTPARENTHESES";
-        case 10:
-            return "LEFTPARENTHESES";
-        case 9:
-            return "RIGHTBRACKET";
-        case 8:
-            return "LEFTBRACKET";
-        case 7:
-            return "RIGHTBRACE";
-        case 6:
-            return "LEFTBRACE";
-        case 56:
-            return "ID OR RESERVED WORD";
-        case 54:
-            return "POINT";
-        case 53:
-            return "NUMFLOAT";
-        case 46:
-            return "NUMINT";
-        case 43:
-            return "POINTER";
-        case 44:
-            return "MINUS";
-        case 40:
-            return "AND";
-        case 41:
-            return "AMBERSAND";
-        case 37:
-            return "OR";
-        case 38:
-            return "PIPE";
-        case 57:
-            return "SEMICOLON";
-        case 58:
-            return "COMMA";
-
-    }
-}
-LexicalAnalyser * getALexPointer(){
-    return &analyser;
-}

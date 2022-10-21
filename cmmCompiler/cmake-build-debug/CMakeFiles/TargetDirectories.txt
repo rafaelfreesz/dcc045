@@ -1,3 +1,0 @@
-E:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/cmake-build-debug/CMakeFiles/cmmCompiler.dir
-E:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
