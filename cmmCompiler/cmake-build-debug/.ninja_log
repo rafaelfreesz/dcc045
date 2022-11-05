@@ -1,0 +1,23 @@
+# ninja log v5
+0	117	6893717583445397	CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj	470a5d8a1c72ef53
+1	210	6893865284422573	build.ninja	7a59a8bd127b5718
+13	135	6893862151711567	CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj	d2de50b4975b28bd
+7	139	6893863611125689	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.cpp.obj	46ce4b21123772d1
+3	92	6893863610665588	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+1	169	6893865284422573	build.ninja	7a59a8bd127b5718
+6	94	6893865286064863	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+3	101	6893869457968163	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+11	129	6893869458258233	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	3c4db164e22d1dfb
+2	101	6893871267837697	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+10	126	6893871268087750	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	3c4db164e22d1dfb
+2	99	6893871933321079	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+7	133	6893871933661155	CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj	d2de50b4975b28bd
+2	108	6893872594730882	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	3c4db164e22d1dfb
+3	91	6893873299073002	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+91	211	6893873300233261	cmmCompiler.exe	d7cfd76ef44dc608
+3	138	6893894513500736	CMakeFiles/cmmCompiler.dir/main.c.obj	aeb2187d31feae5d
+11	145	6893894513580761	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	3c4db164e22d1dfb
+7	156	6893894513700789	CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj	d2de50b4975b28bd
+157	363	6893894515211135	cmmCompiler.exe	d7cfd76ef44dc608
+4	143	6893904544880122	CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj	3c4db164e22d1dfb
+143	283	6893904546240428	cmmCompiler.exe	d7cfd76ef44dc608

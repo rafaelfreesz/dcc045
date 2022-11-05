@@ -1,5 +1,11 @@
 # DCC045
+### Commit 05/11/2022:
 
+<ul>
+  <li>Fixed Lexical Analyzer class (Now it uses .cpp);</li>
+  <li>Using extern "C";</li>
+  <li>compile with "g++ *.c *.h *.cpp  -o arq".</li>
+</ul>
 ### Commit 11/10/2022: Second correction of AFD scheme:
 <ul>
     <li>First prototype implementation</li>
