@@ -2,7 +2,7 @@
 ### Commit 05/11/2022:
 
 <ul>
-  <li>Fixed Lexical Analyzer class (Now it uses .cpp);</li>
+  <li>Fixed Symbol Table class (Now it uses .cpp);</li>
   <li>Using extern "C";</li>
   <li>compile with "g++ *.c *.h *.cpp  -o arq".</li>
 </ul>
