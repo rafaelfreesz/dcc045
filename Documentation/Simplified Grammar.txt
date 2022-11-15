@@ -1,0 +1,98 @@
+A ::= FA | BA | CA | F
+B ::= abcIDeCdqeB | ε
+C ::= IDeC | ε
+D ::= SqE | DfSqE | 
+S ::= g | ε
+E ::= hji | ε
+F ::= ISqkGlcCJd
+G ::= ISqEH | ε
+H ::= fISqEH | ε
+I ::= m | n | o | p | q | r | s
+J ::= K | KJ
+K ::= tkOlKuK | vkOlK | wkOlcLd | xe | ykMle | zkOle | 1Oe | 2e | cJd | qkMle | 3K4k“…”lK | Oe
+L ::= 5j6JL | 5j6L
+M ::= ε | N
+N ::= O | OfN
+O ::= P | QO | ORO | O=O
+P ::= q | j | 7 | 8 | kOl | O9q | Oçq | qkMl | OhOi | ãO | õO | á | é
+Q ::= í | ó | ú
+R ::= â | ê | î | ô | û | ý | ú | ä | ë | õ | ï | ñ | ã | ö | ü
+
+--------NONTERMINALS----------
+Program --> A
+TypeDecl --> B
+VarDecl --> C
+IdList --> D
+Array --> E
+FunctionDecl --> F
+FormalList --> G
+FormalRest --> H
+Type --> I
+StmtList --> J
+Stmt --> K
+CaseBlock --> L
+ExprList --> M
+ExprListTail --> N
+Expr --> O
+Primary --> P
+UnaryOp --> Q
+BinOp --> R
+Pointer --> S
+
+--------TERMINALS----------
+typedef -> a
+struct -> b
+{ -> c
+} -> d
+; -> e
+, -> f
+* -> g
+[ -> h
+] -> i
+NUM -> j
+( -> k
+) -> l
+long -> m
+int -> n
+float -> o
+bool -> p
+ID -> q
+char -> r
+double -> s
+if -> t
+else -> u
+while -> v
+switch -> w
+break -> x
+print -> y
+readln -> z
+return -> 1
+throw -> 2
+try -> 3
+catch -> 4
+case -> 5
+“:” -> 6
+LITERAL -> 7
+´ ASCII ´ -> 8
+“.” -> 9
+“->” -> ç
+“&” -> ã
+“g” -> õ
+true-> á
+false -> é
+“-“ -> í
+“!” -> ó
+“+” -> ú
+“==” -> â
+“<” -> ê
+“<=” -> î
+“>=” -> ô
+“>” -> û
+“!=” -> ý
+“-” -> ä
+“|” -> ë
+“/” -> ï
+“%” -> ñ
+“&&” -> ö
+“||” -> ü
+epsilon -> ε
