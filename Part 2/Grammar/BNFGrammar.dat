@@ -1,0 +1,19 @@
+<Program> ::= <FunctionDecl> <Program> | <TypeDecl> <Program> | <VarDecl> <Program> | <FunctionDecl>
+<TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl> | epsilon
+<VarDecl> ::= <Type> <IdList> ; <VarDecl> | epsilon
+<IdList> ::= <Pointer> ID <Array> | <IdList> , <Pointer> ID <Array>
+<Pointer> ::= * | epsilon
+<Array> ::= [ NUM ] <Array> | epsilon
+<FunctionDecl> ::= <Type> <Pointer> ID ( <FormalList> ) { <VarDecl> <StmtList> }
+<FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<Type> ::= long | int | float | bool | ID | char | double
+<StmtList> ::= <Stmt> | <Stmt> <StmtList>
+<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | ID ( <ExprList> ) ; | try <Stmt> catch ( ) <Stmt> | <Expr> ;
+<CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock> | case NUM ":" <CaseBlock>
+<ExprList> ::= epsilon | <ExprListTail>
+<ExprListTail> ::= <Expr> | <Expr> , <ExprListTail>
+<Expr> ::= <Primary> | <UnaryOp> <Expr> | <Expr> <BinOp> <Expr> | <Expr> = <Expr>
+<Primary> ::= ID | NUM | LITERAL | 'ASCII' | ( <Expr> ) | <Expr> "." ID | <Expr> "->" ID | ID ( <ExprList> ) | <Expr> [ <Expr> ] | "&" <Expr> | "*" <Expr> | true | false
+<UnaryOp> ::= "-" | "!" | "+"
+<BinOp> ::= "==" | "<" | "<=" | ">=" | ">" | "!=" | "+" | "-" | "|" | "*" | "/" | "%" | "&" | "&&" | "||"

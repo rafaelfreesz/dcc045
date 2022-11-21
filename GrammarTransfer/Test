@@ -1,0 +1,14 @@
+<Expr> ::= <Expr> = <Expr> | <ExprBin>
+<ExprBin> ::= <Expr> "||" <Expr> | <ExprBin1>
+<ExprBin1> ::= <Expr> "&&" <Expr> | <ExprBin2>
+<ExprBin2> ::= <Expr> "==" <Expr> | <Expr> "!=" <Expr> | <ExprBin3>
+<ExprBin3> ::= <Expr> "<" <Expr> | <Expr> "<=" <Expr> | <Expr> ">=" <Expr> | <Expr> ">" <Expr> | <ExprBin4>
+<ExprBin4> ::= <Expr> "+" <Expr> | <Expr> "-" <Expr> | <Expr> "|" <Expr> | <ExprBin5>
+<ExprBin5> ::= <Expr> <BinOp> <Expr> | <ExprUn>
+<ExprUn> ::= <UnaryOp> <Expr> | <ExprPrim>
+<ExprPrim> ::= ( <Expr> ) | ID ( <ExprList> ) | <Primary>
+<Primary> ::= ID | NUM | LITERAL | 'ASCII' | <Expr> "." ID | <Expr> "->" ID | <Expr> [ <Expr> ] | "&" <Expr> | "*" <Expr> | true | false
+<Type> ::= long | int | float | bool | ID | char | double
+<Pointer> ::= * | epsilon
+<BinOp> ::= "*" | "/" | "%" | "&"
+<UnaryOp> ::= "-" | "!" | "+"
