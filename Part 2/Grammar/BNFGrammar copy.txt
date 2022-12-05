@@ -1,3 +1,23 @@
+<Program> ::= <FunctionDecl> <Program> | <TypeDecl> <Program> | <VarDecl> <Program> | <FunctionDecl>
+<FunctionDecl> ::= <Type> <Pointer> ID ( <FormalList> ) { <VarDecl> <StmtList> }
+<StmtList> ::= <Stmt> | <Stmt> <StmtList>
+<CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock> | case NUM ":" <StmtList>
+
+<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | ID ( <ExprList> ) ; | try <Stmt> catch ( ) <Stmt> | <Expr> ;
+
+
+<FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl> | epsilon
+<VarDecl> ::= <Type> <IdList> ; <VarDecl> | epsilon
+<IdList> ::= <Pointer> ID <Array> <IdList_2>
+<IdList_2> ::= , <Pointer> ID <Array> <IdList_2> | epsilon
+<Array> ::= [ NUM ] <Array> | epsilon
+<Pointer> ::= * | epsilon
+<Type> ::= long | int | float | bool | ID | char | double
+<UnaryOp> ::= "-" | "!" | "+"
+<BinOp> ::= "*" | "/" | "%" | "&"
+
 <ExprList> ::= epsilon | <ExprListTail>
 <ExprListTail> ::= <Expr> | <Expr> , <ExprListTail>
 <Expr> ::= <ExprBin> <Expr_l>
@@ -16,10 +36,8 @@
 <ExprBin5_l> ::= <BinOp> <ExprUn> <ExprBin5_l> | epsilon
 <ExprUn> ::= <ExprPrim> <ExprUn_l>
 <ExprUn_l> ::= <UnaryOp> <ExprPrim> <ExprUn_l> | epsilon
-<ExprPrim> ::= <Primary> <ExprPrim_l>
-<ExprPrim_l> ::= ( <Expr> ) <Primary> <ExprPrim_l> | epsilon
+<ExprPrim> ::= <Primary> | ( <Expr> )
 <Primary> ::= ID <Primary_l> | NUM <Primary_l> | LITERAL <Primary_l> | 'ASCII' <Primary_l> | ID ( <ExprList> ) <Primary_l> | "&" <Expr> <Primary_l> | "*" <Expr> <Primary_l> | true <Primary_l> | false <Primary_l>
 <Primary_l> ::= <ExprPrim_l> <ExprUn_l> <ExprBin5_l> <ExprBin3_l> <ExprBin2_l> <ExprBin1_l> <ExprBin_l> <Expr_l> <Primary_l2> <Primary_l> | epsilon
 <Primary_l2> ::= "." ID | "->" ID | [ <Expr> ]
-<UnaryOp> ::= "-" | "!" | "+"
-<BinOp> ::= "*" | "/" | "%" | "&"
+

@@ -70,84 +70,21 @@ void tokenize(string str, vector<string> &token_v, string DELIMITER) {
 }
 
 string translate(string in){
+    //Non-terminal productions
+    if(in.at(0)=='<'){
+        string ret="";
 
-    if(in=="<Program>"){
-        return "PROGRAM";
-    }else if (in=="<TypeDecl>"){
-        return "TYPEDECL";
-    }else if (in=="<VarDecl>"){
-        return "VARDECL";
-    }else if (in=="<IdList>"){
-        return "IDLIST";
-    }else if (in=="<Pointer>"){
-        return "POINTER";
-    }else if (in=="<Array>"){
-        return "ARRAY";
-    }else if (in=="<FunctionDecl>"){
-        return "FUNCTIONDECL";
-    }else if (in=="<FormalList>"){
-        return "FORMALLIST";
-    }else if (in=="<FormalRest>"){
-        return "FORMALREST";
-    }else if (in=="<Type>"){
-        return "TYPE";
-    }else if (in=="<StmtList>"){
-        return "STMTLIST";
-    }else if (in=="<Stmt>"){
-        return "STMT";
-    }else if (in=="<CaseBlock>"){
-        return "CASEBLOCK";
-    }else if (in=="<ExprList>"){
-        return "EXPRLIST";
-    }else if (in=="<ExprListTail>"){
-        return "EXPRLISTTAIL";
-    }else if (in=="<Expr>"){
-        return "EXPR";
-    }else if (in=="<ExprBin>"){
-        return "EXPRBIN";
-    }else if (in=="<ExprBin1>"){
-        return "EXPRBIN1";
-    }else if (in=="<ExprBin2>"){
-        return "EXPRBIN2";
-    }else if (in=="<ExprBin3>"){
-        return "EXPRBIN3";
-    }else if (in=="<ExprBin4>"){
-        return "EXPRBIN4";
-    }else if (in=="<ExprBin5>"){
-        return "EXPRBIN5";
-    }else if (in=="<BinOp>"){
-        return "BINOP";
-    }else if (in=="<ExprUn>"){
-        return "EXPRUN";
-    }else if (in=="<Expr_l>"){
-        return "EXPR_L";
-    }else if (in=="<ExprBin_l>"){
-        return "EXPRBIN_L";
-    }else if (in=="<ExprBin1_l>"){
-        return "EXPRBIN1_L";
-    }else if (in=="<ExprBin2_l>"){
-        return "EXPRBIN2_L";
-    }else if (in=="<ExprBin3_l>"){
-        return "EXPRBIN3_L";
-    }else if (in=="<ExprBin4_l>"){
-        return "EXPRBIN4_L";
-    }else if (in=="<ExprBin5_l>"){
-        return "EXPRBIN5_L";
-    }else if (in=="<BinOp>_l"){
-        return "BINOP_L";
-    }else if (in=="<ExprUn_l>"){
-        return "EXPRUN_L";
-    }else if (in=="<UnaryOp>"){
-        return "UNARYOP";
-    }else if (in=="<ExprPrim>"){
-        return "EXPRPRIM";
-    }else if (in=="<Primary>"){
-        return "PRIMARY";
-    }else if (in=="<Primary_l>"){
-        return "PRIMARY_L";
-    }else if (in=="<IdList_l>"){
-        return "IDLIST_L";
-    }else if (in=="\"-\""){
+        for(int i=1;i<in.size()-1;i++){
+            if(in.at(i)>96 && in.at(i)<123){
+                ret+=in.at(i)-32;
+            }else{
+                ret+=in.at(i);
+            }
+        }
+        return ret;
+
+        //Terminal Productions
+    } else if (in=="\"-\""){
         return "minus";
     }else if (in=="\"+\""){
         return "plus";
