@@ -1,11 +1,8 @@
 <Program> ::= <FunctionDecl> <Program> | <TypeDecl> <Program> | <VarDecl> <Program> | <FunctionDecl>
 <FunctionDecl> ::= <Type> <Pointer> ID ( <FormalList> ) { <VarDecl> <StmtList> }
-<StmtList> ::= <Stmt> | <Stmt> <StmtList>
 <CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock> | case NUM ":" <StmtList>
-
+<StmtList> ::= <Stmt> | <Stmt> <StmtList>
 <Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | ID ( <ExprList> ) ; | try <Stmt> catch ( ) <Stmt> | <Expr> ;
-
-
 <FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
 <FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
 <TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl> | epsilon
@@ -17,7 +14,6 @@
 <Type> ::= long | int | float | bool | ID | char | double
 <UnaryOp> ::= "-" | "!" | "+"
 <BinOp> ::= "*" | "/" | "%" | "&"
-
 <ExprList> ::= epsilon | <ExprListTail>
 <ExprListTail> ::= <Expr> | <Expr> , <ExprListTail>
 <Expr> ::= <ExprBin> <Expr_l>
@@ -38,6 +34,45 @@
 <ExprUn_l> ::= <UnaryOp> <ExprPrim> <ExprUn_l> | epsilon
 <ExprPrim> ::= <Primary> | ( <Expr> )
 <Primary> ::= ID <Primary_l> | NUM <Primary_l> | LITERAL <Primary_l> | 'ASCII' <Primary_l> | ID ( <ExprList> ) <Primary_l> | "&" <Expr> <Primary_l> | "*" <Expr> <Primary_l> | true <Primary_l> | false <Primary_l>
-<Primary_l> ::= <ExprPrim_l> <ExprUn_l> <ExprBin5_l> <ExprBin3_l> <ExprBin2_l> <ExprBin1_l> <ExprBin_l> <Expr_l> <Primary_l2> <Primary_l> | epsilon
+<Primary_l> ::= <ExprUn_l> <ExprBin5_l> <ExprBin3_l> <ExprBin2_l> <ExprBin1_l> <ExprBin_l> <Expr_l> <Primary_l2> <Primary_l> | epsilon
 <Primary_l2> ::= "." ID | "->" ID | [ <Expr> ]
 
+
+---------------- if Test
+
+<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt>
+
+if(Expr1)
+    Expr2
+else
+    if(Expr3)
+        Expr4
+    else
+        Expr5
+
+    
+
+if(<Expr>) <Expr1> else if(<Expr>) <Expr2> else <Expr3>  
+<Stmt>
+if ( Expr1 ) <Stmt> else <Stmt>
+if ( Expr1 ) Expr2 else <Stmt>
+if ( Expr1 ) Expr2 else if ( <Expr> ) <Stmt> else <Stmt>
+if ( Expr1 ) Expr2 else if ( Expr3 ) <Stmt> else <Stmt>
+if ( Expr1 ) Expr2 else if ( Expr3 ) Expr4 else <Stmt>
+if ( Expr1 ) Expr2 else if ( Expr3 ) Expr4 else Expr5
+
+if(Expr1)
+    if(Expr2)
+        Expr3
+    else
+        Expr4
+else
+    Expr5
+
+<Stmt>
+if ( <Expr> ) <Stmt> else <Stmt>
+if ( Expr1 ) <Stmt> else <Stmt>
+if ( Expr1 ) if ( <Expr> ) <Stmt> else <Stmt> else <Stmt>
+if ( Expr1 ) if ( Expr2 ) <Stmt> else <Stmt> else <Stmt>
+if ( Expr1 ) if ( Expr2 ) Expr3 else <Stmt> else <Stmt>
+if ( Expr1 ) if ( Expr2 ) Expr3 else Expr4 else Expr5
