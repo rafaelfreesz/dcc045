@@ -1,24 +1,25 @@
-<Program> ::= <FunctionDecl> <Program> | <TypeDecl> <Program> | <VarDecl> <Program> | <FunctionDecl>
+<Program> ::= <FunctionDecl> <Program_Compl> | <TypeDecl> <Program> | <VarDecl> <Program>
+<Program_Compl> ::= <Program> | epsilon
 <TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl_2>
 <TypeDecl_2> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl_2> | epsilon
 <VarDecl> ::= <Type> <IdList> ; <VarDecl_2>
 <VarDecl_2> ::= <Type> <IdList> ; <VarDecl_2> | epsilon
 <IdList> ::= <Pointer> ID <Array> <IdList_2>
 <IdList_2> ::= , <Pointer> ID <Array> <IdList_2> | epsilon
-<Pointer> ::= * | epsilon
 <Array> ::= [ NUM ] <Array> | epsilon
 <FunctionDecl> ::= <Type> <Pointer> ID ( <FormalList> ) { <VarDecl_2> <StmtList> }
 <FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
 <FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
-<Type> ::= long | int | float | bool | ID | char | double
 <StmtList> ::= <Stmt> <StmtList_2>
 <StmtList_2> ::= <Stmt> <StmtList_2> | epsilon
 <Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | ID ( <ExprList> ) ; | try <Stmt> catch ( ) <Stmt> | <Expr> ;
-<CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock> | case NUM ":" <StmtList>
-<ExprList> ::= epsilon | <ExprListTail>
-<ExprListTail> ::= <Expr> | <Expr> , <ExprListTail>
+<CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock_2>
+<CaseBlock_2> ::= case NUM ":" <StmtList> <CaseBlock_2> | epsilon
+<ExprList> ::= <ExprListTail> | epsilon
+<ExprListTail> ::= <Expr> <ExprListTail_Comp>
+<ExprListTail_Comp> ::= , <ExprListTail> | epsilon
 <Expr> ::= <ExprBin> <Expr_l>
-<Expr_l> ::= = <ExprBin> <Expr_l> | epsilon
+<Expr_l> ::= "=" <ExprBin> <Expr_l> | epsilon
 <ExprBin> ::= <ExprBin1> <ExprBin_l>
 <ExprBin_l> ::= "||" <ExprBin1> <Expr_l> | epsilon
 <ExprBin1> ::= <ExprBin2> <ExprBin1_l>
@@ -34,8 +35,11 @@
 <ExprUn> ::= <ExprPrim> <ExprUn_l>
 <ExprUn_l> ::= <UnaryOp> <ExprPrim> <ExprUn_l> | epsilon
 <ExprPrim> ::= <Primary> | ( <Expr> )
-<Primary> ::= ID <Primary_l> | NUM <Primary_l> | LITERAL <Primary_l> | 'ASCII' <Primary_l> | ID ( <ExprList> ) <Primary_l> | "&" <Expr> <Primary_l> | "*" <Expr> <Primary_l> | true <Primary_l> | false <Primary_l>
+<Primary> ::= ID <Primary_Compl> | NUM <Primary_l> | LITERAL <Primary_l> | 'ASCII' <Primary_l> | "&" <Expr> <Primary_l> | "*" <Expr> <Primary_l> | true <Primary_l> | false <Primary_l>
+<Primary_Compl> ::= <Primary_l> | ( <ExprList> ) <Primary_l>
 <Primary_l> ::= <ExprUn_l> <ExprBin5_l> <ExprBin4_l> <ExprBin3_l> <ExprBin2_l> <ExprBin1_l> <ExprBin_l> <Expr_l> <Primary_l2> <Primary_l> | epsilon
 <Primary_l2> ::= "." ID | "->" ID | [ <Expr> ]
 <UnaryOp> ::= "-" | "!" | "+"
 <BinOp> ::= "*" | "/" | "%" | "&"
+<Pointer> ::= * | epsilon
+<Type> ::= long | int | float | bool | ID | char | double

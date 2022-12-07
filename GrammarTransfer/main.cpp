@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
                 cout << " | ";
             }
             for(int k=0;k<pieces.size();k++) {
+
                 cout << translate(pieces.at(k));
                 if(k!=(pieces.size()-1)){
                     cout<<" ";
@@ -88,7 +89,7 @@ string translate(string in){
         return "minus";
     }else if (in=="\"+\""){
         return "plus";
-    }else if (in=="\"=\"" || in=="="){
+    }else if (in=="\"=\""){
         return "assign";
     }else if (in=="\"==\""){
         return "eq";
@@ -134,11 +135,11 @@ string translate(string in){
         return "leftparentheses";
     }else if (in==")"){
         return "rightparentheses";
-    }else if (in==":" || in=="\":\""){
+    }else if (in=="\":\""){
         return "colon";
     }else if (in==";"){
         return "semicolon";
-    }else if (in=="." || in=="\".\""){
+    }else if (in=="\".\""){
         return "point";
     }else if (in==","){
         return "comma";
