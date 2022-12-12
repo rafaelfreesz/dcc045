@@ -6,6 +6,8 @@ using namespace std;
 
 void tokenize(string str, vector<string> &token_v, string DELIMITER);
 string translate(string in);
+bool isNonTerminal(string s);
+void calculateFirstSet(vector<string> &nonTerminals, vector<vector<string>> &terminals);
 
 int main(int argc, char *argv[]) {
     ifstream arq;
@@ -21,15 +23,17 @@ int main(int argc, char *argv[]) {
 
     while(getline(arq,line)){
 
-        vector<string> sentences;
+        if(line!="" && line.substr(0,2)!="\\\\") {
+            vector<string> sentences;
 
-        tokenize(line,sentences," ::= ");
-        nonTerminals.push_back(sentences.at(0));
+            tokenize(line, sentences, " ::= ");
+            nonTerminals.push_back(sentences.at(0));
 
-        vector<string> newTerminals;
-        tokenize(sentences.at(1),newTerminals," | ");
+            vector<string> newTerminals;
+            tokenize(sentences.at(1), newTerminals, " | ");
 
-        terminals.push_back(newTerminals);
+            terminals.push_back(newTerminals);
+        }
 
     }
 
@@ -202,4 +206,72 @@ string translate(string in){
         exit(100);
     }
 
+}
+
+bool isNonTerminal(string s){
+    return s.at(0)=='<' && s.at(s.size()-1)=='>';
+}
+
+bool nonTerminalIsNullable(string nonTerminal, vector<string> nonTerminals, vector<vector<string>> terminals){
+    for(int i=0;i<nonTerminals.size();i++){
+        if(nonTerminals.at(i)==nonTerminal){
+            for(int j=0;j<terminals.size();j++){
+                if(terminals.at(i).at(j)=="epsilon"){
+                    return true;
+                }
+            }
+                return false;
+        }
+    }
+    cout<<"NonTerminal " + nonTerminal + " not founded"<<endl;
+    exit(99);
+}
+
+void calculateFirstSet(vector<string> nonTerminals, vector<vector<string>> terminals){
+
+    vector<vector<string>> firstSets;
+
+    for(int i=0;i<nonTerminals.size();i++){
+        vector<string> firstSet;
+        firstSets.push_back(firstSet);
+    }
+
+    bool changed;
+
+    do{
+        changed= false;
+
+        for(int i=0;i<nonTerminals.size();i++){
+
+            for(int j=0;j<terminals.at(i).size();j++){
+
+                vector<string> prod;
+                tokenize( terminals.at(i).at(j), prod," ");
+
+                for(int k=0;k<prod.size();k++) {
+                    // Verifying epsilon production
+                    if (prod.at(0) == "epsilon" || !isNonTerminal(prod.at(0))) {
+                        firstSets.at(i).push_back("epsilon");
+                        changed= true;
+                        break;
+
+                    //Verifying nonTerminal conditions
+                    }else {
+                        firstSets.at(i).push_back(prod.at(k));
+
+                        if(!nonTerminalIsNullable(prod.at(k),nonTerminals,terminals)){
+
+                        }
+
+                    }
+
+                }
+
+
+
+            }
+        }
+
+
+    }while(changed);
 }
