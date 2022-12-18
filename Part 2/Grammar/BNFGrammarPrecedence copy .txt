@@ -12,7 +12,10 @@
 <FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
 <StmtList> ::= <Stmt> <StmtList_2>
 <StmtList_2> ::= <Stmt> <StmtList_2> | epsilon
-<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | try <Stmt> catch ( ) <Stmt> | ID <Stmt_1> ; | <UnaryOp> ID <Stmt_2> ;
+<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | try <Stmt> catch ( ) <Stmt> | ID <Stmt_1> ; | <UnaryOp> <Stmt_Prim_3> ; | <Stmt_Prim> <Stmt_2> ;
+<Stmt_Prim> ::= ( <Expr> ) <Stmt_2> | <Stmt_Prim_2> 
+<Stmt_Prim_2> ::= NUM <Stmt_2> | LITERAL <Stmt_2> | 'ASCII' <Stmt_2> | "&" <Expr> <Stmt_2> | "*" <Expr> <Stmt_2> | true <Stmt_2> | false <Stmt_2>
+<Stmt_Prim_3> ::= ID <Stmt_1> | <Stmt_Prim> <Stmt_2>
 <Stmt_1> ::= ( <ExprList> ) | <Stmt_2>
 <Stmt_2> ::= "=" <Expr> | <Stmt_3>
 <Stmt_3> ::= "||" <Expr> | <Stmt_4>

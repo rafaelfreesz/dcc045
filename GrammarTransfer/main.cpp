@@ -6,18 +6,57 @@ using namespace std;
 
 void tokenize(string str, vector<string> &token_v, string DELIMITER);
 string translate(string in);
+string reverseTranslate(string in);
 bool isNonTerminal(string s);
-void calculateFirstSet(vector<string> &nonTerminals, vector<vector<string>> &terminals);
+void grammarToTool();
+void firstFollowSets();
 
 int main(int argc, char *argv[]) {
+
+    //firstFollowSets();
+    grammarToTool();
+    return 0;
+}
+
+void firstFollowSets(){
+    ifstream arq;
+    string line;
+    ofstream output("outputfile");
+    arq.open("firstFollow");
+
+    while(getline(arq,line)){
+        vector<string> elements;
+        tokenize(line, elements, " | ");
+
+        vector<string> first;
+        tokenize(elements.at(1),first," ");
+
+        vector<string> follow;
+        tokenize(elements.at(2),follow," ");
+
+        output<<elements.at(0) + " ||| ";
+
+        for(string str: first){
+            output<<reverseTranslate(str)+" ";
+        }
+
+        output<<"||| ";
+
+        for(string str: follow){
+            output<<reverseTranslate(str)+" ";
+        }
+        output<<endl;
+
+    }
+}
+
+void grammarToTool(){
     ifstream arq;
     string line;
 
-    if(argc>1){
-        arq.open(argv[1]);
-    }else {
-        arq.open("Test");
-    }
+
+    arq.open("Test");
+
     vector<string> nonTerminals;
     vector<vector<string>> terminals;
 
@@ -60,10 +99,7 @@ int main(int argc, char *argv[]) {
             cout<<endl;
         }
     }
-
-    return 0;
 }
-
 void tokenize(string str, vector<string> &token_v, string DELIMITER) {
     size_t start = str.find_first_not_of(DELIMITER), end=start;
 
@@ -73,7 +109,128 @@ void tokenize(string str, vector<string> &token_v, string DELIMITER) {
         start = str.find_first_not_of(DELIMITER, end);
     }
 }
+string reverseTranslate(string in){
+    //Non-terminal productions
+    if (in=="minus"){
+        return "\"-\"";
+    }else if (in=="plus"){
+        return "\"+\"";
+    }else if (in=="assign"){
+        return "\"=\"";
+    }else if (in=="eq"){
+        return "\"==\"";
+    }else if (in=="less"){
+        return "\"<\"";
+    }else if (in=="leq"){
+        return "\"<=\"";
+    }else if (in=="great"){
+        return "\">\"";
+    }else if (in=="geq"){
+        return "\">=\"";
+    }else if (in=="not"){
+        return "\"!\"";
+    }else if (in=="neq"){
+        return "\"!=\"";
+    }else if (in=="mult"){
+        return "\"*\"";
+    }else if (in=="div"){
+        return "\"/\"";
+    }else if (in=="mod"){
+        return "\"%\"";
+    }else if (in=="ampersand"){
+        return "\"&\"";
+    }else if (in=="and"){
+        return "\"&&\"";
+    }else if (in=="pipe"){
+        return "\"|\"";
+    }else if (in=="or"){
+        return "\"||\"";
+    }else if (in=="pointercontent"){
+        return "*";
+    }else if (in=="pointerprop"){
+        return "\"->\"";
+    }else if (in=="leftbrace"){
+        return "{";
+    }else if (in=="rightbrace"){
+        return "}";
+    }else if (in=="leftbracket"){
+        return "[";
+    }else if (in=="rightbracket"){
+        return "]";
+    }else if (in=="leftparentheses"){
+        return "(";
+    }else if (in=="rightparentheses"){
+        return ")";
+    }else if (in=="colon"){
+        return "\":\"";
+    }else if (in=="semicolon"){
+        return ";";
+    }else if (in=="point"){
+        return "\".\"";
+    }else if (in=="comma"){
+        return ",";
+    }else if (in=="typedef"){
+        return in;
+    }else if (in=="struct"){
+        return in;
+    }else if (in=="long"){
+        return in;
+    }else if (in=="int"){
+        return in;
+    }else if (in=="float"){
+        return in;
+    }else if (in=="bool"){
+        return in;
+    }else if (in=="char"){
+        return in;
+    }else if (in=="double"){
+        return in;
+    }else if (in=="if"){
+        return in;
+    }else if (in=="while"){
+        return in;
+    }else if (in=="switch"){
+        return in;
+    }else if (in=="break"){
+        return in;
+    }else if (in=="print"){
+        return in;
+    }else if (in=="readln"){
+        return in;
+    }else if (in=="return"){
+        return in;
+    }else if (in=="throw"){
+        return in;
+    }else if (in=="try"){
+        return in;
+    }else if (in=="catch"){
+        return in;
+    }else if (in=="case"){
+        return in;
+    }else if (in=="true"){
+        return in;
+    }else if (in=="false"){
+        return in;
+    }else if (in=="else"){
+        return in;
+    }else if (in=="id"){
+        return "ID";
+    }else if (in=="num"){
+        return "NUM";
+    }else if (in=="literal"){
+        return "LITERAL";
+    }else if (in=="ascii"){
+        return "'ASCII'";
+    }else if (in=="epsilon"){
+        return "";
+    }else if (in=="emptyset"){
+        return in;
+    }else{
+        cout<<"Impossible to recognize "+in<<endl;
+        exit(100);
+    }
 
+}
 string translate(string in){
     //Non-terminal productions
     if(in.at(0)=='<'){

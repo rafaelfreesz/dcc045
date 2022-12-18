@@ -1,0 +1,54 @@
+PROGRAM ||| long int float bool ID char double typedef ||| emptyset 
+PROGRAM2 ||| ; ( [ , ||| emptyset 
+PROGRAM3 ||| long int float bool ID char double typedef ||| emptyset 
+VARDECL2 ||| long int float bool ID char double ||| } long int float bool char double typedef if while switch break print readln return throw { try ID "-" "!" "+" ( NUM LITERAL 'ASCII' "&" "*" true false 
+IDLIST2 ||| , ||| ; 
+TYPEDECL ||| typedef ||| long int float bool ID char double typedef 
+IDLIST ||| ID * ||| ; 
+VARDECL ||| long int float bool ID char double ||| } 
+TYPEDECL2 ||| typedef ||| long int float bool ID char double typedef 
+FORMALLIST ||| long int float bool ID char double ||| ) 
+ARRAY ||| [ ||| ) ; , 
+FORMALREST ||| , ||| ) 
+STMTLIST2 ||| if while switch break print readln return throw { try ID "-" "!" "+" ( NUM LITERAL 'ASCII' "&" "*" true false ||| } case 
+STMT ||| if while switch break print readln return throw { try ID "-" "!" "+" ( NUM LITERAL 'ASCII' "&" "*" true false ||| if while switch break print readln return throw { try ID "-" "!" "+" ( NUM LITERAL 'ASCII' "&" "*" true false else catch } case 
+STMT_PRIM2 ||| NUM LITERAL 'ASCII' "&" "*" true false ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT_PRIM3 ||| ID ( NUM LITERAL 'ASCII' "&" "*" true false ||| ; 
+STMT_PRIM ||| ( NUM LITERAL 'ASCII' "&" "*" true false ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT1 ||| ( "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| ; 
+STMT2 ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT3 ||| "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT4 ||| "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT5 ||| "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT6 ||| "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT7 ||| "+" "-" "|" "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT8 ||| "*" "/" "%" "&" "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+STMT9 ||| "." "->" [ ||| "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" "." "->" [ ; 
+CASEBLOCK ||| case ||| } 
+STMTLIST ||| if while switch break print readln return throw { try ID "-" "!" "+" ( NUM LITERAL 'ASCII' "&" "*" true false ||| } case 
+CASEBLOCK2 ||| case ||| } 
+EXPRLISTTAIL2 ||| , ||| ) 
+EXPRLISTTAIL ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ) 
+EXPR_L ||| "=" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR2 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_2_L ||| "||" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR3 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_3_L ||| "&&" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR4 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_4_L ||| "==" "!=" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR5 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_5_L ||| "<" "<=" ">" ">=" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR6 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_6_L ||| "+" "-" "|" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR7 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR_7_L ||| "*" "/" "%" "&" ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR8 ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPR9 ||| ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+PRIMARY ||| ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+PRIMARY2 ||| ( ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+EXPRLIST ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ) 
+EXPR ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+PRIMARY3 ||| "->" "." [ ||| ; "=" "||" "&&" "==" "!=" "<" "<=" ">" ">=" "+" "-" "|" "*" "/" "%" "&" , ) "->" "." [ ] 
+UNARYOP ||| "-" "!" "+" ||| "-" "!" "+" ( ID NUM LITERAL 'ASCII' "&" "*" true false 
+POINTER ||| * ||| ID 
+TYPE ||| long int float bool ID char double ||| * ID 

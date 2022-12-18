@@ -1,0 +1,54 @@
+PROGRAM | long int float bool id char double typedef | emptyset
+PROGRAM2 | semicolon leftparentheses leftbracket comma | emptyset
+PROGRAM3 | long int float bool id char double typedef | emptyset
+VARDECL2 | long int float bool id char double | rightbrace long int float bool char double typedef if while switch break print readln return throw leftbrace try id minus not plus leftparentheses num literal ascii ampersand mult true false
+IDLIST2 | comma | semicolon
+TYPEDECL | typedef | long int float bool id char double typedef
+IDLIST | id pointercontent | semicolon
+VARDECL | long int float bool id char double | rightbrace
+TYPEDECL2 | typedef | long int float bool id char double typedef
+FORMALLIST | long int float bool id char double | rightparentheses
+ARRAY | leftbracket | rightparentheses semicolon comma
+FORMALREST | comma | rightparentheses
+STMTLIST2 | if while switch break print readln return throw leftbrace try id minus not plus leftparentheses num literal ascii ampersand mult true false | rightbrace case
+STMT | if while switch break print readln return throw leftbrace try id minus not plus leftparentheses num literal ascii ampersand mult true false | if while switch break print readln return throw leftbrace try id minus not plus leftparentheses num literal ascii ampersand mult true false else catch rightbrace case
+STMT_PRIM2 | num literal ascii ampersand mult true false | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT_PRIM3 | id leftparentheses num literal ascii ampersand mult true false | semicolon
+STMT_PRIM | leftparentheses num literal ascii ampersand mult true false | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT1 | leftparentheses assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | semicolon
+STMT2 | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT3 | or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT4 | and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT5 | eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT6 | less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT7 | plus minus pipe mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT8 | mult div mod ampersand point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+STMT9 | point pointerprop leftbracket | assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
+CASEBLOCK | case | rightbrace
+STMTLIST | if while switch break print readln return throw leftbrace try id minus not plus leftparentheses num literal ascii ampersand mult true false | rightbrace case
+CASEBLOCK2 | case | rightbrace
+EXPRLISTTAIL2 | comma | rightparentheses
+EXPRLISTTAIL | minus not plus leftparentheses id num literal ascii ampersand mult true false | rightparentheses
+EXPR_L | assign | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR2 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_2_L | or | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR3 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_3_L | and | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR4 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_4_L | eq neq | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR5 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_5_L | less leq great geq | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR6 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_6_L | plus minus pipe | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR7 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR_7_L | mult div mod ampersand | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR8 | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPR9 | leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+PRIMARY | id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+PRIMARY2 | leftparentheses | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+EXPRLIST | minus not plus leftparentheses id num literal ascii ampersand mult true false | rightparentheses
+EXPR | minus not plus leftparentheses id num literal ascii ampersand mult true false | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+PRIMARY3 | pointerprop point leftbracket | semicolon assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand comma rightparentheses pointerprop point leftbracket rightbracket
+UNARYOP | minus not plus | minus not plus leftparentheses id num literal ascii ampersand mult true false
+POINTER | pointercontent | id
+TYPE | long int float bool id char double | pointercontent id
