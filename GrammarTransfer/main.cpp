@@ -10,11 +10,13 @@ string reverseTranslate(string in);
 bool isNonTerminal(string s);
 void grammarToTool();
 void firstFollowSets();
+void buildFunctions();
 
 int main(int argc, char *argv[]) {
 
     //firstFollowSets();
     grammarToTool();
+
     return 0;
 }
 

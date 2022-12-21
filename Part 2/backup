@@ -52,19 +52,17 @@
 <Type> ::= long | int | float | bool | ID | char | double
 
 
-
-
-
-S -> Aaa | b
-A -> Scc | d
-
-S -> Aaa | b
-A -> Aaacc | d
-
-S -> Aaa | b
-A -> d A'
-A' -> aaccA' | epsilon
-
-S -> Aaa | b
-A -> d A'
-A' -> aaccA' | epsilon
+----------------- Soluções lógicas sugeridas ----------------
+<VarDecl_2> ::= ver!
+<TypeDecl_2> first/follow clashing --> "typedef" -> Se aparecer nunca será epsilon
+....
+O mesmo vale pros <Stmt_x>
+....
+<Expr_l> first/follow clashing --> "=" -> Se aparecer nunca será epsilon
+<Expr_1_l> first/follow clashing --> "||" -> Se aparecer nunca será epsilon
+<Expr_2_l> first/follow clashing --> "&&" -> Se aparecer nunca será epsilon
+<Expr_3_l> first/follow clashing --> "==" "!=" -> Se aparecer nunca será epsilon
+<Expr_4_l> first/follow clashing --> "<" "<=" ">" ">=" -> Se aparecer nunca será epsilon
+<Expr_5_l> first/follow clashing --> "+" "-" "|" -> Se aparecer nunca será epsilon
+<Expr_6_l> first/follow clashing --> "*" "/" "%" "&" -> Se aparecer nunca será epsilon
+<Primary_3> first/follow clashing --> "." "->" "[" -> Se aparecer nunca será epsilon

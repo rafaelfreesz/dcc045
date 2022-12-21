@@ -1,12 +1,16 @@
-<Program> ::= <Type> <Pointer> ID <Program_2> | <TypeDecl> <Program>
-<Program_2> ::= <Array> <IdList_2> ; <VarDecl_2> <Program> | ( <FormalList> ) { <VarDecl_2> <StmtList> } <Program_3>
-<Program_3> ::= <Program> | epsilon
+<Program> ::= <DeclPrefix> <DeclSulfix> | <TypeDecl> <Program>
+<DeclPrefix> ::= <Type> <Pointer> ID
+<DeclSulfix> ::= <FunctionDeclSulfix> <Program_2> | <VarDeclSulfix> <Program>
+<Program_2> ::= <Program> | epsilon
+<VarDeclSulfix> ::= <Array> <IdList_2> ;
+
 <VarDecl> ::= <Type> <IdList> ; <VarDecl_2>
 <VarDecl_2> ::= <Type> <IdList> ; <VarDecl_2> | epsilon
+
+<FunctionDeclSulfix> ::= ( <FormalList> ) { <VarDecl_2> <StmtList> }
 <IdList> ::= <Pointer> ID <Array> <IdList_2>
 <IdList_2> ::= , <Pointer> ID <Array> <IdList_2> | epsilon
-<TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl_2>
-<TypeDecl_2> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ; <TypeDecl_2> | epsilon
+<TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ;
 <Array> ::= [ NUM ] <Array> | epsilon
 <FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
 <FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
@@ -30,8 +34,10 @@
 <ExprList> ::= <ExprListTail> | epsilon
 <ExprListTail> ::= <Expr> <ExprListTail_2>
 <ExprListTail_2> ::= , <ExprListTail> | epsilon
-<Expr> ::= <Expr_2> <Expr_l>
-<Expr_l> ::= "=" <Expr_2> <Expr_l> | epsilon
+<Expr> ::= <Expr_1> <Expr_l>
+<Expr_l> ::= "=" <Expr_1> <Expr_l> | epsilon
+<Expr_1> ::= <Expr_2> <Expr_1_l>
+<Expr_1_l> ::= "||" <Expr_2> <Expr_1_l> | epsilon
 <Expr_2> ::= <Expr_3> <Expr_2_l>
 <Expr_2_l> ::= "&&" <Expr_3> <Expr_2_l> | epsilon
 <Expr_3> ::= <Expr_4> <Expr_3_l>
@@ -43,7 +49,7 @@
 <Expr_6> ::= <Expr_7> <Expr_6_l>
 <Expr_6_l> ::= "*" <Expr_7> <Expr_6_l> | "/" <Expr_7> <Expr_6_l> | "%" <Expr_7> <Expr_6_l> | "&" <Expr_7> <Expr_6_l> | epsilon 
 <Expr_7> ::= <UnaryOp> <Expr_7> | <Expr_8>
-<Expr_8> ::= ( <Expr> ) | <Primary>
+<Expr_8> ::= ( <Expr> ) <Primary_3> | <Primary>
 <Primary> ::= ID <Primary_2> <Primary_3> | NUM <Primary_3> | LITERAL <Primary_3> | 'ASCII' <Primary_3> | "&" <Expr> <Primary_3> | "*" <Expr> <Primary_3> | true <Primary_3> | false <Primary_3>
 <Primary_2> ::= ( <ExprList> ) | epsilon
 <Primary_3> ::= "->" ID <Primary_3> | "." ID <Primary_3> | [ <Expr> ] <Primary_3> | epsilon
@@ -52,7 +58,20 @@
 <Type> ::= long | int | float | bool | ID | char | double
 
 
-
+----------------- Soluções lógicas sugeridas ----------------
+<VarDecl_2> ::= ver!
+<TypeDecl_2> first/follow clashing --> "typedef" -> Se aparecer nunca será epsilon
+....
+O mesmo vale pros <Stmt_x>
+....
+<Expr_l> first/follow clashing --> "=" -> Se aparecer nunca será epsilon
+<Expr_1_l> first/follow clashing --> "||" -> Se aparecer nunca será epsilon
+<Expr_2_l> first/follow clashing --> "&&" -> Se aparecer nunca será epsilon
+<Expr_3_l> first/follow clashing --> "==" "!=" -> Se aparecer nunca será epsilon
+<Expr_4_l> first/follow clashing --> "<" "<=" ">" ">=" -> Se aparecer nunca será epsilon
+<Expr_5_l> first/follow clashing --> "+" "-" "|" -> Se aparecer nunca será epsilon
+<Expr_6_l> first/follow clashing --> "*" "/" "%" "&" -> Se aparecer nunca será epsilon
+<Primary_3> first/follow clashing --> "." "->" "[" -> Se aparecer nunca será epsilon
 
 
 S -> Aaa | b

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "LexicalAnalyzer.h"
+#include "Parser.h"
 
 //Print Functions
 void printToken(Token* token);
@@ -13,21 +14,20 @@ int main(int argc, char *argv[]) {
     if(argc>1){
         buildLexicalAnalyzer(argv[1]);
     }else{
-        buildLexicalAnalyzer("text2.cmm");
+        buildLexicalAnalyzer("test.cmm");
         //DoSomething
     }
 
     buildLexemBuffer();
 
-    Token* token=nextToken();
+    Parser::parse();
+    /*Token* token=nextToken();
     while(token->token!=CMMEOF){
-        printToken(token);
         free(token);
         token=nextToken();
-    }
+    }*/
 
-    printToken(token);
-    printSymbolTables();
+
 
 
     clearLexicalAnalyzer(); //TODO testar
@@ -211,7 +211,7 @@ const char* translateState(int state){
         case 46:
             return "NUMINT";
         case 43:
-            return "POINTER";
+            return "pointer";
         case 44:
             return "MINUS";
         case 40:

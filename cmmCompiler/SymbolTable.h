@@ -68,6 +68,7 @@
 #define CATCH 578
 #define CASE 579
 #define FOR 580
+#define ELSE 581
 
 #ifdef __cplusplus
     class TabEntry{

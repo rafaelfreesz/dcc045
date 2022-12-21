@@ -49,15 +49,15 @@ cmake_ninja_workdir = E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/
 
 build cmake_object_order_depends_target_cmmCompiler: phony || CMakeFiles/cmmCompiler.dir
 
-build CMakeFiles/cmmCompiler.dir/main.c.obj: C_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/main.c || cmake_object_order_depends_target_cmmCompiler
-  DEP_FILE = CMakeFiles\cmmCompiler.dir\main.c.obj.d
-  FLAGS = -g
+build CMakeFiles/cmmCompiler.dir/main.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/main.cpp || cmake_object_order_depends_target_cmmCompiler
+  DEP_FILE = CMakeFiles\cmmCompiler.dir\main.cpp.obj.d
+  FLAGS = -g -std=gnu++14
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
-build CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj: C_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/ErrorManager.c || cmake_object_order_depends_target_cmmCompiler
-  DEP_FILE = CMakeFiles\cmmCompiler.dir\ErrorManager.c.obj.d
-  FLAGS = -g
+build CMakeFiles/cmmCompiler.dir/ErrorManager.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/ErrorManager.cpp || cmake_object_order_depends_target_cmmCompiler
+  DEP_FILE = CMakeFiles\cmmCompiler.dir\ErrorManager.cpp.obj.d
+  FLAGS = -g -std=gnu++14
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
@@ -67,9 +67,15 @@ build CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj: CXX_COMPILER__cmmCompiler_
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
-build CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj: C_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/LexicalAnalyzer.c || cmake_object_order_depends_target_cmmCompiler
-  DEP_FILE = CMakeFiles\cmmCompiler.dir\LexicalAnalyzer.c.obj.d
-  FLAGS = -g
+build CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/LexicalAnalyzer.cpp || cmake_object_order_depends_target_cmmCompiler
+  DEP_FILE = CMakeFiles\cmmCompiler.dir\LexicalAnalyzer.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\cmmCompiler.dir
+  OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
+
+build CMakeFiles/cmmCompiler.dir/Parser.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/Parser.cpp || cmake_object_order_depends_target_cmmCompiler
+  DEP_FILE = CMakeFiles\cmmCompiler.dir\Parser.cpp.obj.d
+  FLAGS = -g -std=gnu++14
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
@@ -81,7 +87,7 @@ build CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj: C_COMPILER__cmmCompiler_
 #############################################
 # Link the executable cmmCompiler.exe
 
-build cmmCompiler.exe: CXX_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.c.obj CMakeFiles/cmmCompiler.dir/ErrorManager.c.obj CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.c.obj
+build cmmCompiler.exe: CXX_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.cpp.obj CMakeFiles/cmmCompiler.dir/ErrorManager.cpp.obj CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.cpp.obj CMakeFiles/cmmCompiler.dir/Parser.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir

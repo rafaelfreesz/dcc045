@@ -1,0 +1,59 @@
+<Program> ::= <DeclPrefix> <DeclSulfix> | <TypeDecl> <Program>
+<DeclPrefix> ::= <Type> <Pointer> ID
+<DeclSulfix> ::= <FunctionDecl> <Program_2> | <VarDeclSulfix> <Program>
+<Program_2> ::= <Program> | epsilon
+<VarDeclSulfix> ::= <Array> <IdList_2> ;
+<VarDecl> ::= <Type> <Pointer> ID <Array> <IdList_2> ; <VarDecl_2>
+<VarDecl_2> ::= , <Type> <Pointer> ID <Array> <IdList_2> ; <VarDecl_2> | epsilon
+<FunctionDecl> ::= ( <FormalList> ) { <VarDecl_2> <StmtList_2> }
+<IdList> ::= <Pointer> ID <Array> <IdList_2>
+<IdList_2> ::= , <Pointer> ID <Array> <IdList_2> | epsilon
+<TypeDecl> ::= typedef struct { <Type> <IdList> ; <VarDecl> } ID ;
+<Array> ::= [ NUM ] <Array> | epsilon
+<FormalList> ::= <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<FormalRest> ::= , <Type> <Pointer> ID <Array> <FormalRest> | epsilon
+<StmtList> ::= <Stmt> <StmtList_2>
+<StmtList_2> ::= <Stmt> <StmtList_2> | epsilon
+<Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | try <Stmt> catch ( ) <Stmt> | ID <Stmt_1> ; | <UnaryOp> <Stmt_Prim_3> ; | <Stmt_Prim> <Stmt_2> ;
+<Stmt_Prim> ::= ( <Expr> ) <Stmt_2> | <Stmt_Prim_2> 
+<Stmt_Prim_2> ::= NUM <Stmt_2> | LITERAL <Stmt_2> | 'ASCII' <Stmt_2> | "&" <Expr> <Stmt_2> | "*" <Expr> <Stmt_2> | true <Stmt_2> | false <Stmt_2>
+<Stmt_Prim_3> ::= ID <Stmt_1> | <Stmt_Prim> <Stmt_2>
+<Stmt_1> ::= ( <ExprList> ) | <Stmt_2>
+<Stmt_2> ::= "=" <Expr> | <Stmt_3>
+<Stmt_3> ::= "||" <Expr> | <Stmt_4>
+<Stmt_4> ::= "&&" <Expr> | <Stmt_5>
+<Stmt_5> ::= "==" <Expr> | "!=" <Expr> | <Stmt_6>
+<Stmt_6> ::= "<" <Expr> | "<=" <Expr> | ">" <Expr> | ">=" <Expr> | <Stmt_7>
+<Stmt_7> ::= "+" <Expr> | "-" <Expr> | "|" <Expr> | <Stmt_8>
+<Stmt_8> ::= "*" <Expr> | "/" <Expr> | "%" <Expr> | "&" <Expr> | <Stmt_9>
+<Stmt_9> ::= "." ID <Expr> | "->" ID <Expr> | [ <Expr> ] <Expr> | epsilon
+<CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock_2>
+<CaseBlock_2> ::= case NUM ":" <StmtList> <CaseBlock_2> | epsilon
+<ExprList> ::= <ExprListTail> | epsilon
+<ExprListTail> ::= <Expr> <ExprListTail_2>
+<ExprListTail_2> ::= , <ExprListTail> | epsilon
+<Expr> ::= <Expr_1> <Expr_l>
+<Expr_l> ::= "=" <Expr_1> <Expr_l> | epsilon
+<Expr_1> ::= <Expr_2> <Expr_1_l>
+<Expr_1_l> ::= "||" <Expr_2> <Expr_1_l> | epsilon
+<Expr_2> ::= <Expr_3> <Expr_2_l>
+<Expr_2_l> ::= "&&" <Expr_3> <Expr_2_l> | epsilon
+<Expr_3> ::= <Expr_4> <Expr_3_l>
+<Expr_3_l> ::= "==" <Expr_4> <Expr_3_l> | "!=" <Expr_4> <Expr_3_l> | epsilon 
+<Expr_4> ::= <Expr_5> <Expr_4_l>
+<Expr_4_l> ::= "<" <Expr_5> <Expr_4_l> | "<=" <Expr_5> <Expr_4_l> | ">" <Expr_5> <Expr_4_l> | ">=" <Expr_5> <Expr_4_l> | epsilon 
+<Expr_5> ::= <Expr_6> <Expr_5_l>
+<Expr_5_l> ::= "+" <Expr_6> <Expr_5_l> | "-" <Expr_6> <Expr_5_l> | "|" <Expr_6> <Expr_5_l> | epsilon 
+<Expr_6> ::= <Expr_7> <Expr_6_l>
+<Expr_6_l> ::= "*" <Expr_7> <Expr_6_l> | "/" <Expr_7> <Expr_6_l> | "%" <Expr_7> <Expr_6_l> | "&" <Expr_7> <Expr_6_l> | epsilon 
+<Expr_7> ::= <UnaryOp> <Expr_7> | <Expr_8>
+<Expr_8> ::= ( <Expr> ) <Primary_3> | <Primary>
+<Primary> ::= ID <Primary_2> <Primary_3> | NUM <Primary_3> | LITERAL <Primary_3> | 'ASCII' <Primary_3> | "&" <Expr> <Primary_3> | "*" <Expr> <Primary_3> | true <Primary_3> | false <Primary_3>
+<Primary_2> ::= ( <ExprList> ) | epsilon
+<Primary_3> ::= "->" ID <Primary_3> | "." ID <Primary_3> | [ <Expr> ] <Primary_3> | epsilon
+<UnaryOp> ::= "-" | "!" | "+"
+<Pointer> ::= * | epsilon
+<Type> ::= long | int | float | bool | ID | char | double
+
+
+

@@ -581,7 +581,7 @@ char getBufferCharacter(int advance){
         analyser.bufferIndex=0;
     }
 
-    //If advance, consume the next character
+    //If advance, match the next character
     if(advance){
         return analyser.stremBuffer[analyser.bufferIndex++];
     }else{
