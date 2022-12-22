@@ -16,16 +16,16 @@ void Parser::match(int token) {
 
     if(token != FIRSTTOKEN) {
         if (token == this->token->token) {
-            cout<<"----"<<translate(token);
+            cout<<"---- "<<translate(token);
             this->token = nextToken();
-            cout<<"---->"<< translate(this->token->token)<<"---"<<endl;
+            cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
         } else {
             cout<<"Unexpected token "<< translate(this->token->token)<<". Expected: "<<translate(token)<<endl;
             exit(100);
         }
     }else{
         this->token = nextToken();
-        cout<<"----"<<translate(this->token->token)<<endl;
+        cout<<" ---- "<<translate(this->token->token)<<endl;
     }
 }
 
@@ -2047,7 +2047,7 @@ string Parser::translate(int token) {
         case GREAT: return ">";
         case LEQ: return "<=";
         case ASSIGN: return "=";
-        case EQ: return "=";
+        case EQ: return "==";
         case DIV: return "/";
         case RIGHTPARENTHESES: return ")";
         case LEFTPARENTHESES: return "(";

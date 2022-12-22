@@ -46,6 +46,8 @@ void buildSymbolTables(){
     c_insertKey(reservedWordsSymbolTable, "catch", CATCH);
     c_insertKey(reservedWordsSymbolTable, "case", CASE);
     c_insertKey(reservedWordsSymbolTable, "for", FOR);
+    c_insertKey(reservedWordsSymbolTable, "else", ELSE);
+    c_insertKey(reservedWordsSymbolTable, "default", DEFAULT);
 
     //Identifiers
     identifiersSymbolTable = c_buildSymbolTable();

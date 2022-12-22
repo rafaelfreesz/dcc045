@@ -5,6 +5,9 @@ int func(){
     }else if(true){
         b = 2;
         return 0;
+    } else {
+        b=3;
+        
     }
 
 }
