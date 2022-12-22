@@ -12,8 +12,8 @@
 #define BUFFERDELTA 10
 #define DEFAULTLEXEM -1
 #define TABSIZE 499
-#define ID 56
 
+#define ID 56
 #define SEMICOLON 57
 #define COLON 1
 #define MOD 2
@@ -45,7 +45,6 @@
 #define LITERAL 35
 #define NUMFLOAT 53
 #define NUMINT 46
-#define ID 56
 #define COMMA 58
 
 #define TYPEDEF 561

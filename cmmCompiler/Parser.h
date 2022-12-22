@@ -5,12 +5,12 @@
 #ifndef CMMCOMPILER_PARSER_H
 #define CMMCOMPILER_PARSER_H
 
-// #include "Utils.h"
+
 #include "LexicalAnalyzer.h"
 
-
+#include <iostream>
 #define FIRSTTOKEN  -1
-
+using namespace std;
 class Parser {
 public:
 
@@ -26,6 +26,10 @@ public:
     void varDecl();
     void varDecl2();
     void functionDecl();
+    void functionBody();
+    void functionBody2();
+    void functionBody3();
+    void binOp();
     void idList();
     void idList2();
     void typedecl() ;
@@ -33,6 +37,7 @@ public:
     void formalList();
     void formalRest();
     void stmt();
+    void stmtCompl();
     void stmtList();
     void stmtList2();
     void stmtPrim();
@@ -74,6 +79,12 @@ public:
     void unaryOp() ;
     void pointer();
     void type() ;
+    void typeCompl() ;
+
+
+
+    void error();
+    string translate(int token);
 
 
 private:

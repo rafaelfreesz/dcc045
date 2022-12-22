@@ -9,7 +9,7 @@
 #include "SymbolTable.h"
 #include "ErrorManager.h"
 
-#define BUFFERSIZE 10
+#define BUFFERSIZE 100
 #define DEFAULTLEXEM -1
 #define ADVANCE 1
 #define TRUE 1

@@ -20,12 +20,14 @@ int main(int argc, char *argv[]) {
 
     buildLexemBuffer();
 
-    Parser::parse();
-    /*Token* token=nextToken();
+   /* Token* token=nextToken();
     while(token->token!=CMMEOF){
+        printToken(token);
         free(token);
         token=nextToken();
     }*/
+
+    Parser::parse();
 
 
 
