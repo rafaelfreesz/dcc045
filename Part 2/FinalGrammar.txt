@@ -1,19 +1,18 @@
 <Program> ::= <DeclPrefix> <DeclSulfix> | <TypeDecl> <Program>
 <DeclPrefix> ::= <Type> <Pointer> ID
-<DeclSulfix> ::= <FunctionDecl> <Program_2> | <VarDeclSulfix> <Program>
+<DeclSulfix> ::= <FunctionDecl> <Program_2> | <varDeclSulfix> <Program>
 <Program_2> ::= <Program> | epsilon
 
-<VarDeclSulfix> ::= <Array> <IdList_2> ;
+<varDeclSulfix> ; | <IdList_2> | epsilon
 <VarDecl> ::= <Type> <Pointer> ID <Array> <IdList_2> ; <VarDecl_2>
 <VarDecl_2> ::= <Type> <Pointer> ID <Array> <IdList_2> ; <VarDecl_2> | epsilon
 
 <FunctionDecl> ::= ( <FormalList> ) { <FunctionBody> }
 <FunctionBody> ::=  <TypeCompl> <Pointer> ID <Array> <IdList_2> ; <FunctionBody> |  <StmtCompl> <StmtList_2> | ID <FunctionBody_2> | epsilon
-<FunctionBody_2> ::= ID <Pointer> ID <Array> <IdList_2> ; <FunctionBody> | ( <ExprList> ) ; <StmtList_2> | "*" <Expr> <FunctionBody_3> | <BinOp> <Expr> ; <StmtList_2>
-
-<BinOp> ::= "=" | "==" | "<" | "<=" | ">=" | ">" | "!=" | "+" | "-" | "|" | "/" | "%" | "&" | "&&" | "||"
-
-
+<FunctionBody_2> ::= ID <Array> <IdList_2> ; <FunctionBody> | ( <ExprList> ) ; <StmtList_2> | "*" <Expr> <FunctionBody_3> | <BinOp> <Expr> ; <StmtList_2>  | <Stmt_9> <StmtList_2> 
+                 
+<BinOp> ::= "=" | "==" | "<" | "<=" | ">=" | ">" | "!=" | "+" | "-" | "|" | "/" | "%" | "&" | "&&" | "||"  
+		     
 <FunctionBody_3> ::= , <IdList_2> ; <FunctionBody> | ; <FunctionBody>
 
 <IdList> ::= <Pointer> ID <Array> <IdList_2>
@@ -29,7 +28,7 @@
 <StmtList_2> ::= <Stmt> <StmtList_2> | epsilon
 <Stmt> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | try <Stmt> catch ( ) <Stmt> | ID <Stmt_1> ; | <UnaryOp> <Stmt_Prim_3> ; | <Stmt_Prim> <Stmt_2> ;
 <StmtCompl> ::= if ( <Expr> ) <Stmt> else <Stmt> | while ( <Expr> ) <Stmt> | switch ( <Expr> ) { <CaseBlock> } | break ; | print ( <ExprList> ) ; | readln ( <Expr> ) ; | return <Expr> ; | throw ; | { <StmtList> } | try <Stmt> catch ( ) <Stmt> | <UnaryOp> <Stmt_Prim_3> ; | <Stmt_Prim> <Stmt_2> ;
-<Stmt_Prim> ::= ( <Expr> ) <Stmt_2> | <Stmt_Prim_2>
+<Stmt_Prim> ::= ( <Expr> ) <Stmt_2> | <Stmt_Prim_2> 
 <Stmt_Prim_2> ::= NUM <Stmt_2> | LITERAL <Stmt_2> | 'ASCII' <Stmt_2> | "&" <Expr> <Stmt_2> | "*" <Expr> <Stmt_2> | true <Stmt_2> | false <Stmt_2>
 <Stmt_Prim_3> ::= ID <Stmt_1> | <Stmt_Prim> <Stmt_2>
 <Stmt_1> ::= ( <ExprList> ) | <Stmt_2>
@@ -40,7 +39,7 @@
 <Stmt_6> ::= "<" <Expr> | "<=" <Expr> | ">" <Expr> | ">=" <Expr> | <Stmt_7>
 <Stmt_7> ::= "+" <Expr> | "-" <Expr> | "|" <Expr> | <Stmt_8>
 <Stmt_8> ::= "*" <Expr> | "/" <Expr> | "%" <Expr> | "&" <Expr> | <Stmt_9>
-<Stmt_9> ::= "." ID <Expr> | "->" ID <Expr> | [ <Expr> ] <Expr> | epsilon
+<Stmt_9> ::= "." ID <Expr> | "->" ID <Expr> | [ <Expr> ] <Stmt_1> | epsilon
 
 <CaseBlock> ::= case NUM ":" <StmtList> <CaseBlock_2>
 <CaseBlock_2> ::= case NUM ":" <StmtList> <CaseBlock_2> | epsilon
@@ -55,13 +54,13 @@
 <Expr_2> ::= <Expr_3> <Expr_2_l>
 <Expr_2_l> ::= "&&" <Expr_3> <Expr_2_l> | epsilon
 <Expr_3> ::= <Expr_4> <Expr_3_l>
-<Expr_3_l> ::= "==" <Expr_4> <Expr_3_l> | "!=" <Expr_4> <Expr_3_l> | epsilon
+<Expr_3_l> ::= "==" <Expr_4> <Expr_3_l> | "!=" <Expr_4> <Expr_3_l> | epsilon 
 <Expr_4> ::= <Expr_5> <Expr_4_l>
-<Expr_4_l> ::= "<" <Expr_5> <Expr_4_l> | "<=" <Expr_5> <Expr_4_l> | ">" <Expr_5> <Expr_4_l> | ">=" <Expr_5> <Expr_4_l> | epsilon
+<Expr_4_l> ::= "<" <Expr_5> <Expr_4_l> | "<=" <Expr_5> <Expr_4_l> | ">" <Expr_5> <Expr_4_l> | ">=" <Expr_5> <Expr_4_l> | epsilon 
 <Expr_5> ::= <Expr_6> <Expr_5_l>
-<Expr_5_l> ::= "+" <Expr_6> <Expr_5_l> | "-" <Expr_6> <Expr_5_l> | "|" <Expr_6> <Expr_5_l> | epsilon
+<Expr_5_l> ::= "+" <Expr_6> <Expr_5_l> | "-" <Expr_6> <Expr_5_l> | "|" <Expr_6> <Expr_5_l> | epsilon 
 <Expr_6> ::= <Expr_7> <Expr_6_l>
-<Expr_6_l> ::= "*" <Expr_7> <Expr_6_l> | "/" <Expr_7> <Expr_6_l> | "%" <Expr_7> <Expr_6_l> | "&" <Expr_7> <Expr_6_l> | epsilon
+<Expr_6_l> ::= "*" <Expr_7> <Expr_6_l> | "/" <Expr_7> <Expr_6_l> | "%" <Expr_7> <Expr_6_l> | "&" <Expr_7> <Expr_6_l> | epsilon 
 <Expr_7> ::= <UnaryOp> <Expr_7> | <Expr_8>
 <Expr_8> ::= ( <Expr> ) <Primary_3> | <Primary>
 <Primary> ::= ID <Primary_2> <Primary_3> | NUM <Primary_3> | LITERAL <Primary_3> | 'ASCII' <Primary_3> | "&" <Expr> <Primary_3> | "*" <Expr> <Primary_3> | true <Primary_3> | false <Primary_3>

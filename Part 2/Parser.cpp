@@ -2,30 +2,39 @@
 
 Parser::Parser() {
 
+    this->rootNodeAST = new Program();
+
 }
 
 Parser::~Parser() {
 
 }
-void Parser::error() {
-    string transltation=translate(this->token->token);
-    cout<<"Error! token "+ transltation<<endl;
-    exit(100);
-}
+
 void Parser::match(int token) {
+
+    // this->token = nextToken();
+    // while(this->token->token != CMMEOF){
+    //     printToken(this->token);
+    //     this->token = nextToken();
+    // }
+    if(token == CMMEOF){
+        exit(0);
+    }
 
     if(token != FIRSTTOKEN) {
         if (token == this->token->token) {
-            cout<<"---- "<<translate(token);
+            printf("CONSUMED TOKEN  ");
+            printToken(this->token);
             this->token = nextToken();
-            cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
+            printf("NEXT TOKEN ");
+            printToken(this->token);
         } else {
-            cout<<"Unexpected token "<< translate(this->token->token)<<". Expected: "<<translate(token)<<endl;
-            exit(100);
+            printf("UNEXPECTED TOKEN ");
+            translateState(token);
+            printf("%s\n", translateState(token));
         }
     }else{
         this->token = nextToken();
-        cout<<" ---- "<<translate(this->token->token)<<endl;
     }
 }
 
@@ -34,44 +43,66 @@ void Parser::parse() {
     Parser* parser = new Parser();
     parser->match(FIRSTTOKEN);
     parser->program();
-    cout<<"SUCCESS!"<<endl;
-
 
 }
 
 void Parser::program() {
 
-    printf("PROGRAM\n");
+    printf("program\n");
     switch (this->token->token) {
         case DOUBLE:
         case CHAR:
-        case ID:
+        case ID: 
         case BOOL:
         case FLOAT:
         case INT:
         case LONG:
             declprefix();
-            declsulfix(); break;
+            declsulfix(); 
+            break;
         case TYPEDEF:
             typedecl();
-            program(); break;
+            program(); 
+            break;
+
         case CMMEOF:
             match(CMMEOF);
             return;
 
-        default: error();
+        default: printf("Program Error!");
 
     }
+
 
 }
 
 void Parser::declprefix() {
-
+    
     printf("declprefix\n");
-    type();
+    Type* type_ = type();
     pointer();
+
+    Id* id = new Id(this->token);
     match(ID);
 
+    NameDecl* var = new NameDecl(type_, id);
+
+    if(!this->rootNodeAST->varList){
+
+        this->rootNodeAST->varList = new VarList(var, NULL);
+    }else{
+
+        VarList* currentVar = this->rootNodeAST->varList;
+        while(currentVar->next != NULL){
+            
+            currentVar = currentVar->next;
+
+        }
+
+        currentVar->next = new VarList(var, NULL);;
+
+    }
+    
 }
 
 void Parser::declsulfix() {
@@ -83,13 +114,17 @@ void Parser::declsulfix() {
             functionDecl();
             program2();
             break;
-
-        case LEFTBRACKET:
-        case COMMA:
+        
         case SEMICOLON:
+        case COMMA:
             varDeclSulfix();
             program();
             break;
+
+        
+
+        default:
+            printf("declSulfix error !");
 
     }
 
@@ -110,28 +145,43 @@ void Parser::program2(){
         case TYPEDEF:
             program();
             break;
+
         case CMMEOF:
             match(CMMEOF);
-            cout<<"epsilon"<<endl; return;
+            break;
+
         default:
-            error();
+            printf("program2 Error!");
     }
 
 }
 
 void Parser::varDeclSulfix(){
-
+    
     printf("varDeclSulfix\n");
-    switch (this->token->token) {
-        case LEFTBRACKET:
-        case COMMA:
+
+    switch (this->token->token)
+    {
         case SEMICOLON:
-            array();
-            idList2();
             match(SEMICOLON);
             break;
-        default:error();
+        
+        case COMMA:
+            idList2();
+            break;
 
+        case LONG:   
+        case INT:
+        case FLOAT:
+        case BOOL:
+        case CHAR:   
+        case DOUBLE:
+        case LEFTPARENTHESES:
+            break;
+
+        default:
+            printf("varDeclSulfix error !\n");
+            break;
     }
 
 }
@@ -139,33 +189,21 @@ void Parser::varDeclSulfix(){
 void Parser::varDecl(){
 
     printf("varDecl\n");
+    type();
+    pointer();
+    
+    match(ID);
 
-    switch (this->token->token) {
-        case INT:
-        case FLOAT:
-        case LONG:
-        case DOUBLE:
-        case BOOL:
-        case ID:
-        case CHAR:
-            type();
-            pointer();
-            match(ID);
-            array();
-            idList2();
-            match(SEMICOLON);
-            varDecl2();
-            break;
-        default: error();
+    array();
+    idList2();
 
-    }
-
+    match(SEMICOLON);
+    varDecl2();
 
 }
 
 void Parser::varDecl2(){
 
-    printf("varDecl2\n");
     switch (this->token->token) {
         case INT:
         case FLOAT:
@@ -182,10 +220,32 @@ void Parser::varDecl2(){
             match(SEMICOLON);
             varDecl2();
             break;
+        case IF :
+        case WHILE :
+        case SWITCH :
+        case BREAK:
+        case PRINT:
+        case READLN:
+        case RETURN:
+        case THROW:
+        case LEFTBRACE:
+        case TRY:
+        ///CONFLITO EPSILON IGNORADO PARA CASE ID
+        case MINUS:
+        case NOT:
+        case PLUS:
+        case LEFTPARENTHESES:
+        case NUMFLOAT:
+        case NUMINT:
+        case LITERAL:
+        case AMPERSAND:
+        case MULT:
+        case TRUE:
+        case FALSE:
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            return;
         default:
-            error();
+            printf("varDecl2 Error\n");
 
 
     }
@@ -196,26 +256,21 @@ void Parser::varDecl2(){
 void Parser::functionDecl(){
 
     printf("functionDecl\n");
-    switch (this->token->token) {
-        case LEFTPARENTHESES:
-            match(LEFTPARENTHESES);
-            formalList();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
-            functionBody();
-            match(RIGHTBRACE);
-            break;
-        default: error();
-        
-    }
+    match(LEFTPARENTHESES);
+    formalList();
+    match(RIGHTPARENTHESES);
+    match(LEFTBRACE);
+    functionBody();
+    match(RIGHTBRACE);
 
 }
 
-void Parser::functionBody() {
+void Parser::functionBody(){
 
     printf("functionBody\n");
-    switch (this->token->token) {
-        case LONG:
+    switch (this->token->token)
+    {
+        case LONG: 
         case INT:
         case FLOAT:
         case BOOL:
@@ -229,46 +284,53 @@ void Parser::functionBody() {
             match(SEMICOLON);
             functionBody();
             break;
+
+        case IF:
+        case ELSE:
+        case WHILE:
+        case SWITCH:
+        case BREAK:
+        case PRINT:
+        case READLN:
+        case RETURN:
+        case THROW:
+        case LEFTBRACE:
+        case TRY:
+        case LEFTPARENTHESES:
+        case NUMINT:
+        case NUMFLOAT:
+        case LITERAL:
+        case AMPERSAND:
+        case MULT:
+        case TRUE:
+        case FALSE:
+        case MINUS:
+        case NOT:
+        case PLUS:
+
+            stmtCompl();
+            stmtList2();
+            break;
+
         case ID:
             match(ID);
             functionBody2();
             break;
-        case PLUS:
-        case NOT:
-        case MINUS:
-        case LEFTPARENTHESES:
-        case FALSE:
-        case TRUE:
-        case MULT:
-        case AMPERSAND:
-        case LITERAL:
-        case NUMFLOAT:
-        case NUMINT:
-        case LEFTBRACE:
-        case THROW:
-        case RETURN:
-        case READLN:
-        case PRINT:
-        case BREAK:
-        case SWITCH:
-        case WHILE:
-        case IF:
-        case STRUCT:
-            stmtCompl();
-            stmtList2();
+
+        default:
             break;
-        case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
-
-
-
     }
+
+    
+
 }
 
-void Parser::functionBody2() {
+void Parser::functionBody2(){
 
     printf("functionBody2\n");
-    switch (this->token->token) {
+    switch (this->token->token)
+    {      
+
         case ID:
             match(ID);
             array();
@@ -276,26 +338,7 @@ void Parser::functionBody2() {
             match(SEMICOLON);
             functionBody();
             break;
-        case PLUS:
-        case MINUS:
-        case AMPERSAND:
-        case MOD:
-        case DIV:
-        case PIPE:
-        case GEQ:
-        case GREAT:
-        case LEQ:
-        case LESS:
-        case NEQ:
-        case EQ:
-        case AND:
-        case OR:
-        case ASSIGN:
-            binOp();
-            expr();
-            match(SEMICOLON);
-            stmtList2();
-            break;
+
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             exprList();
@@ -303,37 +346,92 @@ void Parser::functionBody2() {
             match(SEMICOLON);
             stmtList2();
             break;
+
         case MULT:
             match(MULT);
             expr();
             functionBody3();
             break;
 
+        case ASSIGN:
+        case EQ:
+        case LESS:
+        case LEQ:
+        case GEQ:
+        case GREAT:
+        case NEQ:
+        case PLUS:
+        case MINUS:
+        case PIPE:
+        case DIV:
+        case MOD:
+        case AMPERSAND:
+        case AND:
+        case OR:
+            binOp();
+            expr();
+            match(SEMICOLON);
+            stmtList2();
+            break;
 
+        case POINT:
+        case POINTER:
+        case LEFTBRACKET:
+            stmt9();
+            match(SEMICOLON);
+            stmtList2();
+            break;
+
+        default:
+            break;
     }
+
+    
+
 }
 
-void Parser::binOp() {
+void Parser::functionBody3(){
+
+    printf("functionBody3\n");
+    switch (this->token->token)
+    {
+
+        case COMMA:
+            match(COMMA);
+            idList2();
+            match(SEMICOLON);
+            functionBody();
+            break;
+
+        case SEMICOLON:
+            match(SEMICOLON);
+            functionBody();
+            break;
+        default:
+            break;
+    }
+
+    
+
+}
+
+void Parser::binOp(){
 
     printf("binOp\n");
-    switch (this->token->token) {
-        case PLUS:
-            match(PLUS);
+
+    switch (this->token->token)
+    {
+        case ASSIGN:
+            match(ASSIGN);
             break;
-        case MINUS:
-            match(MINUS);
+        case EQ:
+            match(EQ);
             break;
-        case AMPERSAND:
-            match(AMPERSAND);
+        case LESS:
+            match(LESS);
             break;
-        case MOD:
-            match(MOD);
-            break;
-        case DIV:
-            match(DIV);
-            break;
-        case PIPE:
-            match(PIPE);
+        case LEQ:
+            match(LEQ);
             break;
         case GEQ:
             match(GEQ);
@@ -341,17 +439,26 @@ void Parser::binOp() {
         case GREAT:
             match(GREAT);
             break;
-        case LEQ:
-            match(LEQ);
-            break;
-        case LESS:
-            match(LESS);
-            break;
         case NEQ:
             match(NEQ);
             break;
-        case EQ:
-            match(EQ);
+        case PLUS:
+            match(PLUS);
+            break;
+        case MINUS:
+            match(MINUS);
+            break;
+        case PIPE:
+            match(PIPE);
+            break;
+        case DIV:
+            match(DIV);
+            break;
+        case MOD:
+            match(MOD);
+            break;
+        case AMPERSAND:
+            match(AMPERSAND);
             break;
         case AND:
             match(AND);
@@ -359,28 +466,9 @@ void Parser::binOp() {
         case OR:
             match(OR);
             break;
-        case ASSIGN:
-            match(ASSIGN);
-            break;
-        
-    }
-}
-
-void Parser::functionBody3() {
-    printf("functionBody3\n");
-    switch (this->token->token) {
-        case COMMA:
-            match(COMMA);
-            idList2();
-            match(SEMICOLON);
-            functionBody();
-            break;
-        case SEMICOLON:
-            match(SEMICOLON);
-            functionBody();
-            break;
+    
         default:
-            error();
+            break;
     }
 
 }
@@ -388,17 +476,10 @@ void Parser::functionBody3() {
 void Parser::idList(){
 
     printf("idList\n");
-    switch (this->token->token) {
-        case ID:
-        case MULT:
-            pointer();
-            match(ID);
-            array();
-            idList2();
-            break;
-        default:
-            error();
-    }
+    pointer();
+    match(ID);
+    array();
+    idList2();
 
 }
 
@@ -407,45 +488,38 @@ void Parser::idList2(){
     printf("idList2\n");
     switch (this->token->token)
     {
-        case COMMA:
-            match(COMMA);
-            pointer();
-            match(ID);
-            array();
-            idList2();
-            break;
+    case COMMA:
+        match(COMMA);
+        pointer();
+        match(ID);
+        array();
+        idList2();
+        break;
+    
+    case SEMICOLON:
+        return;
 
-        case SEMICOLON:
-            cout<<"epsilon"<<endl; return;
-
-        default:
-            error();
+    default:
+        break;
     }
 
-
+    
 
 }
 
 void Parser::typedecl() {
 
     printf("typedecl\n");
-    switch (this->token->token) {
-        case TYPEDEF:
-            match(TYPEDEF);
-            match(STRUCT);
-            match(LEFTBRACE);
-            type();
-            idList();
-            match(SEMICOLON);
-            varDecl2();
-            match(RIGHTBRACE);
-            match(ID);
-            match(SEMICOLON);
-            break;
-        default:
-            error();
-
-    }
+    match(TYPEDEF);
+    match(STRUCT);
+    match(LEFTBRACE);
+    type();
+    idList();
+    match(SEMICOLON);
+    varDecl2();
+    match(RIGHTBRACE);
+    match(ID);
+    match(SEMICOLON);
 
 }
 
@@ -463,11 +537,12 @@ void Parser::array() {
         case RIGHTPARENTHESES:
         case SEMICOLON:
         case COMMA:
-            cout<<"epsilon"<<endl; return;
-        default:
-            error();
-    }
+            break;
 
+        default:
+            printf("Array Error!\n");
+    }
+    
 }
 
 void Parser::formalList(){
@@ -486,16 +561,16 @@ void Parser::formalList(){
             pointer();
             match(ID);
             array();
-            formalRest();
+            formalRest();   
             break;
 
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
-
+            break;
+        
         default:
-            error();
+            break;
     }
-
+    
 
 }
 
@@ -504,60 +579,30 @@ void Parser::formalRest(){
     printf("formalRest\n");
     switch (this->token->token)
     {
-        case COMMA:
-            match(COMMA);
-            type();
-            pointer();
-            match(ID);
-            array();
-            formalRest();
-            break;
+    case COMMA:
+        match(COMMA);
+        type();
+        pointer();
+        match(ID);
+        array();
+        formalRest();
+        break;
+    
+    case RIGHTPARENTHESES:
+        return;
 
-        case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
-
-        default:
-            error();
+    default:
+        break;
     }
-
+    
 
 }
 
 void Parser::stmtList(){
 
     printf("stmtList\n");
-    switch (this->token->token) {
-        case ID:
-        case NOT:
-        case MINUS:
-        case PLUS:
-        case LEFTPARENTHESES:
-        case FALSE:
-        case TRUE:
-        case MULT:
-        case AMPERSAND:
-        case LITERAL:
-        case NUMINT:
-        case NUMFLOAT:
-        case TRY:
-        case LEFTBRACE:
-        case THROW:
-        case RETURN:
-        case READLN:
-        case PRINT:
-        case BREAK:
-        case SWITCH:
-        case WHILE:
-        case ELSE:
-        case IF:
-            stmt();
-            stmtList2();
-            break;
-        default:error();
-
-        
-    }
-
+    stmt();
+    stmtList2();
 
 }
 
@@ -566,40 +611,40 @@ void Parser::stmtList2(){
     printf("stmtList2\n");
     switch (this->token->token)
     {
-        case  IF:
-        case  WHILE:
-        case  SWITCH:
-        case  BREAK:
-        case  PRINT:
-        case  READLN:
-        case  RETURN:
-        case  THROW:
-        case  LEFTBRACE:
-        case  TRY:
-        case  ID:
-        case  MINUS:
-        case  NOT:
-        case  PLUS:
-        case  LEFTPARENTHESES:
-        case  NUMINT:
-        case  NUMFLOAT:
-        case  LITERAL:
-        case  AMPERSAND:
-        case  MULT:
-        case  TRUE:
-        case  FALSE:
-            stmt();
-            stmtList2();
-            break;
+    case  IF:
+    case  WHILE:
+    case  SWITCH:
+    case  BREAK:
+    case  PRINT:
+    case  READLN:
+    case  RETURN:
+    case  THROW:
+    case  LEFTBRACE:
+    case  TRY:
+    case  ID:
+    case  MINUS:
+    case  NOT:
+    case  PLUS:
+    case  LEFTPARENTHESES:
+    case  NUMINT:
+    case  NUMFLOAT:
+    case  LITERAL:
+    case  AMPERSAND:
+    case  MULT:
+    case  TRUE:
+    case  FALSE:
+        stmt();
+        stmtList2();
+        break;
+    
+    case CASE:
+    case RIGHTBRACE:
+        return;
 
-        case CASE:
-        case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
-
-        default:
-            error();
+    default:
+        printf("stmtList2 Error\n");
     }
-
+    
 }
 
 void Parser::stmt(){
@@ -607,217 +652,205 @@ void Parser::stmt(){
     printf("stmt\n");
     switch (this->token->token)
     {
-        case IF:
-            match(IF);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            stmt();
-            match(ELSE);
-            stmt();
-            break;
+    case IF:
+        match(IF);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        stmt();
+        match(ELSE);
+        stmt();
+        
+        break;
+    
+    case WHILE:
+        match(WHILE);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        stmt();
+        
+        break;
 
-        case WHILE:
-            match(WHILE);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            stmt();
-            break;
+    case SWITCH:
+        match(SWITCH);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        match(LEFTBRACE);
+        caseblock();
+        match(RIGHTBRACE);
+        
+        break;
 
-        case SWITCH:
-            match(SWITCH);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
-            caseblock();
-            match(RIGHTBRACE);
-            break;
+    case BREAK:
+        match(BREAK);
+        match(SEMICOLON);    
+        break;
 
-        case BREAK:
-            match(BREAK);
-            match(SEMICOLON);
-            break;
+    case PRINT:
+        match(PRINT);
+        match(LEFTPARENTHESES);
+        exprList();
+        match(SEMICOLON);    
+        break;
 
-        case PRINT:
-            match(PRINT);
-            match(LEFTPARENTHESES);
-            exprList();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
-            break;
+    case READLN:
+        match(PRINT);
+        match(LEFTPARENTHESES);
+        exprList();
+        match(SEMICOLON);    
+        break;
 
-        case READLN:
-            match(READLN);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
-            break;
+    case RETURN:
+        match(RETURN);
+        expr();
+        match(SEMICOLON);    
+        break;
+    
+    case THROW:
+        match(THROW);
+        match(SEMICOLON);    
+        break;
+    
+    case LEFTBRACE:
+        match(LEFTBRACE);
+        stmtList();
+        match(RIGHTBRACE); 
+        break;
 
-        case RETURN:
-            match(RETURN);
-            expr();
-            match(SEMICOLON);
-            break;
+    case TRY:
+        match(TRY);
+        stmt();
+        match(CATCH);
+        match(LEFTPARENTHESES);
+        match(RIGHTPARENTHESES);
+        stmt();
+        break;
 
-        case THROW:
-            match(THROW);
-            match(SEMICOLON);
-            break;
+    case ID:
+        match(ID);
+        stmt1();
+        match(SEMICOLON);
+        break;
+    
+    case MINUS:
+    case NOT:
+    case PLUS:
+        unaryOp();
+        stmtPrim3();
+        match(SEMICOLON);
+        break;
 
-        case LEFTBRACE:
-            match(LEFTBRACE);
-            stmtList();
-            match(RIGHTBRACE);
-            break;
+    case LEFTPARENTHESES:
+        stmtPrim();
+        stmt2();
+        match(SEMICOLON);
+        break;
 
-        case TRY:
-            match(TRY);
-            stmt();
-            match(CATCH);
-            match(LEFTPARENTHESES);
-            match(RIGHTPARENTHESES);
-            stmt();
-            break;
-
-        case ID:
-            match(ID);
-            stmt1();
-            match(SEMICOLON);
-            break;
-
-        case MINUS:
-        case NOT:
-        case PLUS:
-            unaryOp();
-            stmtPrim3();
-            match(SEMICOLON);
-            break;
-
-        case LEFTPARENTHESES:
-        case FALSE:
-        case TRUE:
-        case MULT:
-        case AMPERSAND:
-        case LITERAL:
-        case NUMINT:
-        case NUMFLOAT:
-            stmtPrim();
-            stmt2();
-            match(SEMICOLON);
-            break;
-
-        default:
-            error();
+    default:
+        break;
     }
 
 }
+
 void Parser::stmtCompl(){
 
     printf("stmtCompl\n");
     switch (this->token->token)
     {
-        case IF:
-            match(IF);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            stmt();
-            match(ELSE);
-            stmt();
-            break;
+    case IF:
+        match(IF);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        stmt();
+        match(ELSE);
+        stmt();
+        
+        break;
+    
+    case WHILE:
+        match(WHILE);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        stmt();
+        
+        break;
 
-        case WHILE:
-            match(WHILE);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            stmt();
-            break;
+    case SWITCH:
+        match(SWITCH);
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        match(LEFTBRACE);
+        caseblock();
+        match(RIGHTBRACE);
+        
+        break;
 
-        case SWITCH:
-            match(SWITCH);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
-            caseblock();
+    case BREAK:
+        match(BREAK);
+        match(SEMICOLON);    
+        break;
 
-            match(RIGHTBRACE);
-            break;
+    case PRINT:
+        match(PRINT);
+        match(LEFTPARENTHESES);
+        exprList();
+        match(SEMICOLON);    
+        break;
 
-        case BREAK:
-            match(BREAK);
-            match(SEMICOLON);
-            break;
+    case READLN:
+        match(PRINT);
+        match(LEFTPARENTHESES);
+        exprList();
+        match(SEMICOLON);    
+        break;
 
-        case PRINT:
-            match(PRINT);
-            match(LEFTPARENTHESES);
-            exprList();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
-            break;
+    case RETURN:
+        match(RETURN);
+        expr();
+        match(SEMICOLON);    
+        break;
+    
+    case THROW:
+        match(THROW);
+        match(SEMICOLON);    
+        break;
+    
+    case LEFTBRACE:
+        match(LEFTBRACE);
+        stmtList();
+        match(RIGHTBRACE); 
+        break;
 
-        case READLN:
-            match(READLN);
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
-            break;
+    case TRY:
+        match(TRY);
+        stmt();
+        match(CATCH);
+        match(LEFTPARENTHESES);
+        match(RIGHTPARENTHESES);
+        stmt();
+        break;
+    
+    case MINUS:
+    case NOT:
+    case PLUS:
+        unaryOp();
+        stmtPrim3();
+        match(SEMICOLON);
+        break;
 
-        case RETURN:
-            match(RETURN);
-            expr();
-            match(SEMICOLON);
-            break;
+    case LEFTPARENTHESES:
+        stmtPrim();
+        stmt2();
+        match(SEMICOLON);
+        break;
 
-        case THROW:
-            match(THROW);
-            match(SEMICOLON);
-            break;
-
-        case LEFTBRACE:
-            match(LEFTBRACE);
-            stmtList();
-            match(RIGHTBRACE);
-            break;
-
-        case TRY:
-            match(TRY);
-            stmt();
-            match(CATCH);
-            match(LEFTPARENTHESES);
-            match(RIGHTPARENTHESES);
-            stmt();
-            break;
-
-        case MINUS:
-        case NOT:
-        case PLUS:
-            unaryOp();
-            stmtPrim3();
-            match(SEMICOLON);
-            break;
-
-        case LEFTPARENTHESES:
-        case FALSE:
-        case TRUE:
-        case MULT:
-        case AMPERSAND:
-        case LITERAL:
-        case NUMINT:
-        case NUMFLOAT:
-            stmtPrim();
-            stmt2();
-            match(SEMICOLON);
-            break;
-
-        default:
-            error();
+    default:
+        break;
     }
 
 }
@@ -827,25 +860,25 @@ void Parser::stmtPrim(){
     printf("stmtPrim\n");
     switch (this->token->token)
     {
-        case LEFTPARENTHESES:
-            match(LEFTPARENTHESES);
-            expr();
-            match(RIGHTPARENTHESES);
-            stmt2();
-            break;
+    case LEFTPARENTHESES:
+        match(LEFTPARENTHESES);
+        expr();
+        match(RIGHTPARENTHESES);
+        stmt2();
+        break;
 
-        case NUMINT:
-        case NUMFLOAT:
-        case LITERAL:
-        case AMPERSAND:
-        case MULT:
-        case TRUE:
-        case FALSE:
-            stmtPrim2();
-            break;
-
-        default:
-            error();
+    case NUMINT:
+    case NUMFLOAT:
+    case LITERAL:
+    case AMPERSAND:
+    case MULT:
+    case TRUE:
+    case FALSE:
+        stmtPrim2();
+        break;
+    
+    default:
+        break;
     }
 
 }
@@ -855,7 +888,7 @@ void Parser::stmtPrim2(){
     printf("stmtPrim2\n");
     switch (this->token->token)
     {
-
+    
         case NUMINT:
             match(NUMINT);
             stmt2();
@@ -876,21 +909,20 @@ void Parser::stmtPrim2(){
         case FALSE:
             match(FALSE);
             stmt2();
-            break;
+            break;  
 
         case AMPERSAND:
             match(AMPERSAND);
             expr();
             stmt2();
-            break;
         case MULT:
             match(MULT);
             expr();
             stmt2();
             break;
-
+    
         default:
-            error();
+            break;
     }
 
 }
@@ -900,7 +932,7 @@ void Parser::stmtPrim3(){
     printf("stmtPrim3\n");
     switch (this->token->token)
     {
-
+    
         case ID:
             match(ID);
             stmt1();
@@ -916,10 +948,10 @@ void Parser::stmtPrim3(){
         case FALSE:
             stmtPrim();
             stmt2();
-            break;
+            break; 
 
         default:
-            error();
+            break;
     }
 
 }
@@ -934,7 +966,7 @@ void Parser::stmt1(){
             exprList();
             match(RIGHTPARENTHESES);
             break;
-
+        
         case ASSIGN:
         case OR:
         case AND:
@@ -954,14 +986,13 @@ void Parser::stmt1(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt2();
             break;
 
         default:
-            error();
+            break;
     }
-
+    
 
 }
 
@@ -970,7 +1001,7 @@ void Parser::stmt2(){
     printf("stmt2\n");
     switch (this->token->token)
     {
-
+    
         case ASSIGN:
             match(ASSIGN);
             expr();
@@ -993,12 +1024,11 @@ void Parser::stmt2(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt3();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1008,12 +1038,11 @@ void Parser::stmt3(){
     printf("stmt3\n");
     switch (this->token->token)
     {
-
+    
         case OR:
             match(OR);
             expr();
             break;
-        case ASSIGN:
         case AND:
         case EQ:
         case NEQ:
@@ -1031,13 +1060,11 @@ void Parser::stmt3(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt4();
             break;
 
         default:
-            error();
-
+            break;
     }
 
 }
@@ -1047,13 +1074,11 @@ void Parser::stmt4(){
     printf("stmt4\n");
     switch (this->token->token)
     {
-
+            
         case AND:
             match(AND);
             expr();
             break;
-        case ASSIGN:
-        case OR:
         case EQ:
         case NEQ:
         case LESS:
@@ -1070,12 +1095,11 @@ void Parser::stmt4(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt5();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1085,7 +1109,7 @@ void Parser::stmt5(){
     printf("stmt5\n");
     switch (this->token->token)
     {
-
+            
         case EQ:
             match(EQ);
             expr();
@@ -1094,9 +1118,7 @@ void Parser::stmt5(){
             match(NEQ);
             expr();
             break;
-        case ASSIGN:
-        case OR:
-        case AND:
+
         case LESS:
         case LEQ:
         case GREAT:
@@ -1111,12 +1133,11 @@ void Parser::stmt5(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt6();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1126,28 +1147,24 @@ void Parser::stmt6(){
     printf("stmt6\n");
     switch (this->token->token)
     {
+            
 
-        case GEQ:
-            match(GEQ);
-            expr();
-            break;
-        case GREAT:
-            match(GREAT);
+        case LESS:
+            match(LESS);
             expr();
             break;
         case LEQ:
             match(LEQ);
             expr();
             break;
-        case LESS:
-            match(LESS);
+        case GREAT:
+            match(GREAT);
             expr();
             break;
-        case EQ:
-        case NEQ:
-        case ASSIGN:
-        case OR:
-        case AND:
+        case GEQ:
+            match(GEQ);
+            expr();
+            break;
         case PLUS:
         case MINUS:
         case PIPE:
@@ -1158,12 +1175,11 @@ void Parser::stmt6(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt7();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1173,22 +1189,19 @@ void Parser::stmt7(){
     printf("stmt7\n");
     switch (this->token->token)
     {
-
+        
+        case PLUS:
+            match(PLUS);
+            expr();
+            break;
+        case MINUS:
+            match(MINUS);
+            expr();
+            break;
         case PIPE:
             match(PIPE);
             expr();
             break;
-        case EQ:
-        case NEQ:
-        case ASSIGN:
-        case OR:
-        case AND:
-        case LESS:
-        case LEQ:
-        case GREAT:
-        case GEQ:
-        case PLUS:
-        case MINUS:
         case MULT:
         case DIV:
         case MOD:
@@ -1196,12 +1209,11 @@ void Parser::stmt7(){
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt8();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1212,38 +1224,31 @@ void Parser::stmt8(){
 
     switch (this->token->token)
     {
-
-        case MOD:
-            match(MOD);
+            
+        case MULT:
+            match(MULT);
             expr();
             break;
         case DIV:
             match(DIV);
             expr();
             break;
-        case NEQ:
-        case ASSIGN:
-        case OR:
-        case AND:
-        case LESS:
-        case LEQ:
-        case GREAT:
-        case GEQ:
-        case PLUS:
-        case MINUS:
-        case PIPE:
-        case MULT:
-        case EQ:
+        case MOD:
+            match(MOD);
+            expr();
+            break;
         case AMPERSAND:
+            match(AMPERSAND);
+            expr();
+            break;
         case POINT:
         case POINTER:
         case LEFTBRACKET:
-        case SEMICOLON:
             stmt9();
             break;
 
         default:
-            error();
+            break;
     }
 
 }
@@ -1253,22 +1258,20 @@ void Parser::stmt9(){
     printf("stmt9\n");
     switch (this->token->token)
     {
-
+        
         case POINT:
             match(POINT);
-            match(ID);
             expr();
             break;
         case POINTER:
             match(POINTER);
-            match(ID);
             expr();
             break;
         case LEFTBRACKET:
             match(LEFTBRACKET);
             expr();
             match(RIGHTBRACKET);
-            expr();
+            stmt1();
             break;
         case ASSIGN:
         case OR:
@@ -1280,85 +1283,61 @@ void Parser::stmt9(){
         case GREAT:
         case PLUS:
         case MINUS:
-        case GEQ:
         case PIPE:
         case MULT:
         case DIV:
         case MOD:
         case AMPERSAND:
         case SEMICOLON:
-            cout<<"epsilon"<<endl; return;
+            return;
         default:
-            error();
+            printf("stmt9 Error\n");
     }
 
-}
+} //	assign or and eq neq less leq great geq plus minus pipe mult div mod ampersand point pointerprop leftbracket semicolon
 
 void Parser::caseblock(){
 
     printf("caseblock\n");
+    match(CASE);
 
-    switch (this->token->token) {
-        case CASE:
-            match(CASE);
-            switch (this->token->token)
-            {
-                case NUMINT:
-                    match(NUMINT);
-                    match(COLON);
-                    stmtList();
-                    caseblock2();
-                    break;
-                case NUMFLOAT:
-                    match(NUMFLOAT);
-                    match(COLON);
-                    stmtList();
-                    caseblock2();
-                    break;
-                default:
-                    error();
-            }
+    switch (this->token->token)
+    {
+        case NUMINT:
+            match(NUMINT);
             break;
-        default:
-            error();
+        case NUMFLOAT:
+            match(NUMFLOAT);
+            break;
 
+        default:
+            break;
     }
+
+    match(COLON);
+    stmtList();
+    caseblock2();
 
 }
 
 void Parser::caseblock2(){
 
     printf("caseblock2\n");
-
-    switch (this->token->token) {
+    switch (this->token->token)
+    {   
         case CASE:
             match(CASE);
-            switch (this->token->token)
-            {
-                case NUMINT:
-                    match(NUMINT);
-                    match(COLON);
-                    stmtList();
-                    caseblock2();
-                    break;
-                case NUMFLOAT:
-                    match(NUMFLOAT);
-                    match(COLON);
-                    stmtList();
-                    caseblock2();
-                    break;
-                default:
-                    error();
-            }
+            match(NUMINT);
+            match(COLON);
+            stmtList();
+            caseblock2();
             break;
+        
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
-
+            printf("caseblock2 Error!");
     }
-
-
 
 
 
@@ -1381,11 +1360,10 @@ void Parser::exprList(){
         case TRUE:
         case FALSE:
             exprListTail();
-            break;
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("exprList Error!\n");
 
     }
 
@@ -1400,7 +1378,6 @@ void Parser::exprListTail(){
     exprListTail2();
 
 }
-//minus not plus leftparentheses id num literal ascii ampersand mult true false
 
 void Parser::exprListTail2(){
 
@@ -1411,9 +1388,9 @@ void Parser::exprListTail2(){
             exprListTail();
             break;
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("exprListTail2 Error!\n");
 
     }
 
@@ -1430,16 +1407,16 @@ void Parser::expr(){
 void Parser::expr_l(){
 
     printf("expr_l\n");
-
     switch (this->token->token) {
+        
         case ASSIGN:
             match(ASSIGN);
             expr1();
             expr_l();
             break;
+        case OR:
         case AND:
         case SEMICOLON:
-        case OR:
         case EQ:
         case NEQ:
         case LESS:
@@ -1459,9 +1436,9 @@ void Parser::expr_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("expr_l Error!\n");
 
     }
 
@@ -1506,9 +1483,9 @@ void Parser::expr1_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            return;
         default:
-            error();
+            printf("expr1_l Error!\n");
 
     }
 
@@ -1553,9 +1530,9 @@ void Parser::expr2_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            return;
         default:
-            error();
+            printf("expr2_l Error\n");
     }
 
 }
@@ -1604,9 +1581,9 @@ void Parser::expr3_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("expr3_l Error\n");
     }
 
 }
@@ -1663,9 +1640,9 @@ void Parser::expr4_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("expr4_l Error\n");
     }
 
 }
@@ -1718,9 +1695,9 @@ void Parser::expr5_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("expr5_l Error\n");
     }
 
 }
@@ -1730,6 +1707,7 @@ void Parser::expr6() {
     printf("expr6\n");
     expr7();
     expr6_l();
+            
 
 }
 
@@ -1776,17 +1754,16 @@ void Parser::expr6_l() {
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("expr6_l Error\n");
 
     }
 
 }
 
 void Parser::expr7() {
-
-    printf("expr7\n");
+    
     switch(this->token->token){
         case PLUS:
         case MINUS:
@@ -1804,6 +1781,11 @@ void Parser::expr7() {
         case TRUE:
         case FALSE:
             expr8();
+            break;
+        
+        default:
+            printf("expr7 Error\n");
+            break;
     }
 
     //	leftparentheses id num literal ascii ampersand mult true false
@@ -1828,6 +1810,7 @@ void Parser::expr8() {
         case TRUE:
         case FALSE:
             primary();
+            break;
     }
 
 }
@@ -1876,7 +1859,7 @@ void Parser::primary() {
 }
 
 void Parser::primary2() {
-
+    
     printf("primary2\n");
     switch(this->token->token){
         case LEFTPARENTHESES:
@@ -1907,9 +1890,9 @@ void Parser::primary2() {
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("primary2 Error\n");
     }
 
 }
@@ -1954,9 +1937,9 @@ void Parser::primary3() {
         case COMMA:
         case RIGHTPARENTHESES:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            break;
         default:
-            error();
+            printf("primary3 Error\n");
     }
 
 }
@@ -1985,24 +1968,29 @@ void Parser::pointer() {
             match(MULT);
             break;
         case ID:
-            cout<<"epsilon"<<endl; return;
-        default: error();
+            return;
+
+        default: 
+            printf("pointer Error\n");
     }
 }
 
-void Parser::type() {
-
+Type* Parser::type() {
+    
+    Type* t;
     printf("type\n");
     switch(this->token->token){
         case LONG:
             match(LONG);
             break;
         case INT:
+            t = new Type(new Id(this->token), 32);
             match(INT);
-            break;
+            return t;
         case FLOAT:
+            t = new Type(new Id(this->token), 32);
             match(FLOAT);
-            break;
+            return t;
         case BOOL:
             match(BOOL);
             break;
@@ -2018,9 +2006,10 @@ void Parser::type() {
 
     }
 }
+
 void Parser::typeCompl() {
 
-    printf("typeCompl\n");
+    printf("type\n");
     switch(this->token->token){
         case LONG:
             match(LONG);
@@ -2044,67 +2033,7 @@ void Parser::typeCompl() {
     }
 }
 
-string Parser::translate(int token) {
-    switch (token) {
-        case ID: return "id";
-        case SEMICOLON: return ";";
-        case COLON: return ":";
-        case MOD: return "%";
-        case PLUS: return "+";
-        case MULT: return "*";
-        case CMMEOF: return "eof";
-        case NEQ: return "!=";
-        case NOT: return "!";
-        case GEQ: return ">=";
-        case LESS: return "<";
-        case GREAT: return ">";
-        case LEQ: return "<=";
-        case ASSIGN: return "=";
-        case EQ: return "==";
-        case DIV: return "/";
-        case RIGHTPARENTHESES: return ")";
-        case LEFTPARENTHESES: return "(";
-        case RIGHTBRACE: return "}";
-        case LEFTBRACE: return "{";
-        case RIGHTBRACKET: return "}";
-        case LEFTBRACKET: return "{";
-        case POINT: return ".";
-        case POINTER: return "->";
-        case MINUS: return "-";
-        case AND: return "&&";
-        case OR: return "||";
-        case PIPE: return "|";
-        case LITERAL: return "literal";
-        case NUMFLOAT: return "numfloat";
-        case NUMINT: return "numint";
-        case COMMA: return ",";
-        case TYPEDEF: return "typedef";
-        case STRUCT: return "struct";
-        case LONG: return "long";
-        case INT: return "int";
-        case FLOAT: return "float";
-        case DOUBLE: return "double";
-        case BOOL: return "bool";
-        case CHAR: return "char";
-        case IF: return "if";
-        case WHILE: return "while";
-        case SWITCH: return "switch";
-        case BREAK: return "break";
-        case PRINT: return "print";
-        case READLN: return "readln";
-        case RETURN: return "return";
-        case THROW: return "throw";
-        case TRY: return "try";
-        case CATCH: return "cath";
-        case CASE: return "case";
-        case FOR: return "for";
-        case ELSE: return "else";
-        default: return "whrong";
-
-    }
-}
-
-
 void c_parse() {
     Parser::parse();
 }
+
