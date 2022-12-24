@@ -10,7 +10,17 @@ Parser::~Parser() {
 void Parser::error() {
     string transltation=translate(this->token->token);
     cout<<"Error! token "+ transltation<<endl;
-    exit(100);
+    //exit(100);
+}
+void Parser::matchOrSync(int token, int *nonTeminal) {
+    if (token == this->token->token) {
+        cout<<"---- "<<translate(token);
+        this->token = nextToken();
+        cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
+    } else {
+        cout<<"Error line "<<to_string(analyser.lineCounter)<<". Expected "<<translate(token)<<endl;
+        sync(nonTeminal);
+    }
 }
 void Parser::match(int token) {
 
@@ -21,14 +31,26 @@ void Parser::match(int token) {
             cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
         } else {
             cout<<"Unexpected token "<< translate(this->token->token)<<". Expected: "<<translate(token)<<endl;
-            exit(100);
+            //exit(100);
         }
     }else{
         this->token = nextToken();
         cout<<" ---- "<<translate(this->token->token)<<endl;
     }
 }
-
+void Parser::sync(int *nonTerminal) {
+    cout<<"Sync: Given -> "+ translate(this->token->token);
+    while(this->token->token!=CMMEOF) {
+        this->token=nextToken();
+        for (int i = 1; i < nonTerminal[0]; i++) {
+            if(this->token->token==nonTerminal[i]){
+                cout<<", returned " + translate(this->token->token)<<endl;
+                return;
+            }
+        }
+    }
+    cout<<", returned " + translate(this->token->token)<<endl;
+}
 void Parser::parse() {
 
     Parser* parser = new Parser();
@@ -38,6 +60,8 @@ void Parser::parse() {
 
 
 }
+
+int F_program[]={1,CMMEOF};
 
 void Parser::program() {
 
@@ -59,20 +83,39 @@ void Parser::program() {
             match(CMMEOF);
             return;
 
-        default: error();
+        default: sync(F_program);
 
     }
 
 }
 
+int F_declPrefix[]={5,LEFTPARENTHESES,SEMICOLON,LEFTBRACKET,COMMA, CMMEOF};
+
 void Parser::declprefix() {
 
     printf("declprefix\n");
-    type();
-    pointer();
-    match(ID);
+    switch (this->token->token) {
+        case INT:
+        case LONG:
+        case FLOAT:
+        case DOUBLE:
+        case CHAR:
+        case BOOL:
+        case ID:
+            type();
+            pointer();
+            matchOrSync(ID,F_declPrefix);
+            break;
+        default:sync(F_declPrefix);
+
+
+
+    }
 
 }
+
+int F_declSulfix[]={1,CMMEOF};
+
 
 void Parser::declsulfix() {
 
@@ -90,10 +133,14 @@ void Parser::declsulfix() {
             varDeclSulfix();
             program();
             break;
+        default:
+            sync(F_declSulfix);
 
     }
 
 }
+
+int F_program2[]={1,CMMEOF};
 
 void Parser::program2(){
 
@@ -114,10 +161,13 @@ void Parser::program2(){
             match(CMMEOF);
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_program2);
     }
 
 }
+
+int F_valDeclSulfix[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
+
 
 void Parser::varDeclSulfix(){
 
@@ -128,13 +178,16 @@ void Parser::varDeclSulfix(){
         case SEMICOLON:
             array();
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_valDeclSulfix);
             break;
-        default:error();
+        default:sync(F_declSulfix);
 
     }
 
 }
+
+int F_varDecl[]={1,CMMEOF};
+
 
 void Parser::varDecl(){
 
@@ -150,18 +203,21 @@ void Parser::varDecl(){
         case CHAR:
             type();
             pointer();
-            match(ID);
+            matchOrSync(ID,F_varDecl);
             array();
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_varDecl);
             varDecl2();
             break;
-        default: error();
+        default: sync(F_varDecl);
 
     }
 
 
 }
+
+int F_varDecl2[]={2,RIGHTBRACE,CMMEOF};
+
 
 void Parser::varDecl2(){
 
@@ -176,22 +232,24 @@ void Parser::varDecl2(){
         case CHAR:
             type();
             pointer();
-            match(ID);
+            matchOrSync(ID,F_varDecl2);
             array();
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_varDecl2);
             varDecl2();
             break;
         case RIGHTBRACE:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_varDecl2);
 
 
     }
 
 
 }
+
+int F_functionDecl[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
 void Parser::functionDecl(){
 
@@ -200,16 +258,19 @@ void Parser::functionDecl(){
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             formalList();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
+            matchOrSync(RIGHTPARENTHESES,F_functionDecl);
+            matchOrSync(LEFTBRACE,F_functionDecl);
             functionBody();
-            match(RIGHTBRACE);
+            matchOrSync(RIGHTBRACE,F_functionDecl);
             break;
-        default: error();
+        default: sync(F_functionDecl);
         
     }
 
 }
+
+int F_functionBody[]={2,RIGHTBRACE,CMMEOF};
+
 
 void Parser::functionBody() {
 
@@ -223,10 +284,10 @@ void Parser::functionBody() {
         case DOUBLE:
             typeCompl();
             pointer();
-            match(ID);
+            matchOrSync(ID,F_functionBody);
             array();
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_functionBody);
             functionBody();
             break;
         case ID:
@@ -259,11 +320,16 @@ void Parser::functionBody() {
             break;
         case RIGHTBRACE:
             cout<<"epsilon"<<endl; return;
+        default:
+            sync(F_functionBody);
 
 
 
     }
 }
+
+int F_functionBody2[]={2,RIGHTBRACE,CMMEOF};
+
 
 void Parser::functionBody2() {
 
@@ -273,7 +339,7 @@ void Parser::functionBody2() {
             match(ID);
             array();
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_functionBody2);
             functionBody();
             break;
         case PLUS:
@@ -293,14 +359,14 @@ void Parser::functionBody2() {
         case ASSIGN:
             binOp();
             expr();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_functionBody2);
             stmtList2();
             break;
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             exprList();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
+            matchOrSync(RIGHTPARENTHESES,F_functionBody2);
+            matchOrSync(SEMICOLON,F_functionBody2);
             stmtList2();
             break;
         case MULT:
@@ -308,10 +374,14 @@ void Parser::functionBody2() {
             expr();
             functionBody3();
             break;
+        default:
+            sync(F_functionBody2);
 
 
     }
 }
+
+int F_binOp[]={12,MINUS,NOT,PLUS,LEFTPARENTHESES,ID,NUMFLOAT,NUMINT,LITERAL,AMPERSAND,MULT,TRUE,FALSE,CMMEOF};
 
 void Parser::binOp() {
 
@@ -362,9 +432,14 @@ void Parser::binOp() {
         case ASSIGN:
             match(ASSIGN);
             break;
+        default:
+            sync(F_binOp);
         
     }
 }
+
+int F_functionBody3[]={2,RIGHTBRACE,CMMEOF};
+
 
 void Parser::functionBody3() {
     printf("functionBody3\n");
@@ -372,7 +447,7 @@ void Parser::functionBody3() {
         case COMMA:
             match(COMMA);
             idList2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_functionBody3);
             functionBody();
             break;
         case SEMICOLON:
@@ -380,10 +455,12 @@ void Parser::functionBody3() {
             functionBody();
             break;
         default:
-            error();
+            sync(F_functionBody3);
     }
 
 }
+
+int F_idList[]={2,SEMICOLON, CMMEOF};
 
 void Parser::idList(){
 
@@ -392,15 +469,17 @@ void Parser::idList(){
         case ID:
         case MULT:
             pointer();
-            match(ID);
+            matchOrSync(ID,F_idList);
             array();
             idList2();
             break;
         default:
-            error();
+            sync(F_idList);
     }
 
 }
+
+int F_idList2[]={2,SEMICOLON, CMMEOF};
 
 void Parser::idList2(){
 
@@ -410,7 +489,7 @@ void Parser::idList2(){
         case COMMA:
             match(COMMA);
             pointer();
-            match(ID);
+            matchOrSync(ID,F_idList2);
             array();
             idList2();
             break;
@@ -419,12 +498,14 @@ void Parser::idList2(){
             cout<<"epsilon"<<endl; return;
 
         default:
-            error();
+            sync(F_idList2);
     }
 
 
 
 }
+
+int F_typeDecl[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
 void Parser::typedecl() {
 
@@ -432,22 +513,24 @@ void Parser::typedecl() {
     switch (this->token->token) {
         case TYPEDEF:
             match(TYPEDEF);
-            match(STRUCT);
-            match(LEFTBRACE);
+            matchOrSync(STRUCT,F_typeDecl);
+            matchOrSync(LEFTBRACE,F_typeDecl);
             type();
             idList();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_typeDecl);
             varDecl2();
-            match(RIGHTBRACE);
-            match(ID);
-            match(SEMICOLON);
+            matchOrSync(RIGHTBRACE,F_typeDecl);
+            matchOrSync(ID,F_typeDecl);
+            matchOrSync(SEMICOLON,F_typeDecl);
             break;
         default:
-            error();
+            sync(F_typeDecl);
 
     }
 
 }
+
+int F_array[]={4,RIGHTPARENTHESES,SEMICOLON,COMMA,CMMEOF};
 
 void Parser::array() {
 
@@ -455,8 +538,8 @@ void Parser::array() {
     switch (this->token->token) {
         case LEFTBRACKET:
             match(LEFTBRACKET);
-            match(NUMINT);
-            match(RIGHTBRACKET);
+            matchOrSync(NUMINT,F_array);
+            matchOrSync(RIGHTBRACKET,F_array);
             array();
             break;
 
@@ -465,10 +548,12 @@ void Parser::array() {
         case COMMA:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_array);
     }
 
 }
+
+int F_formalList[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::formalList(){
 
@@ -484,7 +569,7 @@ void Parser::formalList(){
         case DOUBLE:
             type();
             pointer();
-            match(ID);
+            matchOrSync(ID,F_formalList);
             array();
             formalRest();
             break;
@@ -493,11 +578,13 @@ void Parser::formalList(){
             cout<<"epsilon"<<endl; return;
 
         default:
-            error();
+            sync(F_formalList);
     }
 
 
 }
+
+int F_formalRest[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::formalRest(){
 
@@ -508,7 +595,7 @@ void Parser::formalRest(){
             match(COMMA);
             type();
             pointer();
-            match(ID);
+            matchOrSync(ID,F_formalRest);
             array();
             formalRest();
             break;
@@ -517,11 +604,13 @@ void Parser::formalRest(){
             cout<<"epsilon"<<endl; return;
 
         default:
-            error();
+            sync(F_formalRest);
     }
 
 
 }
+
+int F_stmtList[]={3, CASE,RIGHTBRACE,CMMEOF};
 
 void Parser::stmtList(){
 
@@ -553,13 +642,15 @@ void Parser::stmtList(){
             stmt();
             stmtList2();
             break;
-        default:error();
+        default:sync(F_stmtList);
 
         
     }
 
 
 }
+
+int F_stmtList2[]={3,CASE,RIGHTBRACE,CMMEOF};
 
 void Parser::stmtList2(){
 
@@ -597,10 +688,12 @@ void Parser::stmtList2(){
             cout<<"epsilon"<<endl; return;
 
         default:
-            error();
+            sync(F_stmtList2);
     }
 
 }
+
+int F_stmt[]={27,CASE, ELSE, CATCH, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LEFTBRACE, TRY, ID, MINUS, NOT, PLUS, LEFTPARENTHESES, NUMFLOAT, NUMINT, LITERAL, AMPERSAND, MULT, TRUE, FALSE, RIGHTBRACE, CMMEOF};
 
 void Parser::stmt(){
 
@@ -609,83 +702,83 @@ void Parser::stmt(){
     {
         case IF:
             match(IF);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
             expr();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
             stmt();
-            match(ELSE);
+            matchOrSync(ELSE,F_stmt);
             stmt();
             break;
 
         case WHILE:
             match(WHILE);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
             expr();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
             stmt();
             break;
 
         case SWITCH:
             match(SWITCH);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
             expr();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
+            matchOrSync(LEFTBRACE,F_stmt);
             caseblock();
-            match(RIGHTBRACE);
+            matchOrSync(RIGHTBRACE,F_stmt);
             break;
 
         case BREAK:
             match(BREAK);
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case PRINT:
             match(PRINT);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
             exprList();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case READLN:
             match(READLN);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
             expr();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case RETURN:
             match(RETURN);
             expr();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case THROW:
             match(THROW);
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case LEFTBRACE:
             match(LEFTBRACE);
             stmtList();
-            match(RIGHTBRACE);
+            matchOrSync(RIGHTBRACE,F_stmt);
             break;
 
         case TRY:
             match(TRY);
             stmt();
-            match(CATCH);
-            match(LEFTPARENTHESES);
-            match(RIGHTPARENTHESES);
+            matchOrSync(CATCH,F_stmt);
+            matchOrSync(LEFTPARENTHESES,F_stmt);
+            matchOrSync(RIGHTPARENTHESES,F_stmt);
             stmt();
             break;
 
         case ID:
             match(ID);
             stmt1();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case MINUS:
@@ -693,7 +786,7 @@ void Parser::stmt(){
         case PLUS:
             unaryOp();
             stmtPrim3();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         case LEFTPARENTHESES:
@@ -706,14 +799,17 @@ void Parser::stmt(){
         case NUMFLOAT:
             stmtPrim();
             stmt2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmt);
             break;
 
         default:
-            error();
+            sync(F_stmt);
     }
 
 }
+
+int F_stmtCompl[]={24,IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LEFTBRACE, TRY, ID, MINUS, NOT, PLUS, LEFTPARENTHESES, NUMINT, NUMFLOAT, LITERAL, AMPERSAND, MULT, TRUE, FALSE, RIGHTBRACE, CMMEOF};
+
 void Parser::stmtCompl(){
 
     printf("stmtCompl\n");
@@ -721,77 +817,77 @@ void Parser::stmtCompl(){
     {
         case IF:
             match(IF);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
             expr();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
             stmt();
-            match(ELSE);
+            matchOrSync(ELSE,F_stmtCompl);
             stmt();
             break;
 
         case WHILE:
             match(WHILE);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
             expr();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
             stmt();
             break;
 
         case SWITCH:
             match(SWITCH);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
             expr();
-            match(RIGHTPARENTHESES);
-            match(LEFTBRACE);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
+            matchOrSync(LEFTBRACE,F_stmtCompl);
             caseblock();
 
-            match(RIGHTBRACE);
+            matchOrSync(RIGHTBRACE,F_stmtCompl);
             break;
 
         case BREAK:
             match(BREAK);
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case PRINT:
             match(PRINT);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
             exprList();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case READLN:
             match(READLN);
-            match(LEFTPARENTHESES);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
             expr();
-            match(RIGHTPARENTHESES);
-            match(SEMICOLON);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case RETURN:
             match(RETURN);
             expr();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case THROW:
             match(THROW);
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case LEFTBRACE:
             match(LEFTBRACE);
             stmtList();
-            match(RIGHTBRACE);
+            matchOrSync(RIGHTBRACE,F_stmtCompl);
             break;
 
         case TRY:
             match(TRY);
             stmt();
-            match(CATCH);
-            match(LEFTPARENTHESES);
-            match(RIGHTPARENTHESES);
+            matchOrSync(CATCH,F_stmtCompl);
+            matchOrSync(LEFTPARENTHESES,F_stmtCompl);
+            matchOrSync(RIGHTPARENTHESES,F_stmtCompl);
             stmt();
             break;
 
@@ -800,7 +896,7 @@ void Parser::stmtCompl(){
         case PLUS:
             unaryOp();
             stmtPrim3();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         case LEFTPARENTHESES:
@@ -813,14 +909,16 @@ void Parser::stmtCompl(){
         case NUMFLOAT:
             stmtPrim();
             stmt2();
-            match(SEMICOLON);
+            matchOrSync(SEMICOLON,F_stmtCompl);
             break;
 
         default:
-            error();
+            sync(F_stmtCompl);
     }
 
 }
+
+int F_stmtPrim[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmtPrim(){
 
@@ -830,7 +928,7 @@ void Parser::stmtPrim(){
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             expr();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_stmtPrim);
             stmt2();
             break;
 
@@ -845,10 +943,12 @@ void Parser::stmtPrim(){
             break;
 
         default:
-            error();
+            sync(F_stmtPrim);
     }
 
 }
+
+int F_stmtPrim2[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmtPrim2(){
 
@@ -890,10 +990,12 @@ void Parser::stmtPrim2(){
             break;
 
         default:
-            error();
+            sync(F_stmtPrim2);
     }
 
 }
+
+int F_stmtPrim3[]={2,SEMICOLON,CMMEOF};
 
 void Parser::stmtPrim3(){
 
@@ -919,10 +1021,12 @@ void Parser::stmtPrim3(){
             break;
 
         default:
-            error();
+            sync(F_stmtPrim3);
     }
 
 }
+
+int F_stmt1[]={2,SEMICOLON,CMMEOF};
 
 void Parser::stmt1(){
 
@@ -932,7 +1036,7 @@ void Parser::stmt1(){
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             exprList();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES, F_stmt1);
             break;
 
         case ASSIGN:
@@ -959,11 +1063,13 @@ void Parser::stmt1(){
             break;
 
         default:
-            error();
+            sync(F_stmt1);
     }
 
 
 }
+
+int F_stmt2[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt2(){
 
@@ -998,10 +1104,12 @@ void Parser::stmt2(){
             break;
 
         default:
-            error();
+            sync(F_stmt2);
     }
 
 }
+
+int F_stmt3[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt3(){
 
@@ -1036,11 +1144,13 @@ void Parser::stmt3(){
             break;
 
         default:
-            error();
+            sync(F_stmt3);
 
     }
 
 }
+
+int F_stmt4[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt4(){
 
@@ -1075,10 +1185,12 @@ void Parser::stmt4(){
             break;
 
         default:
-            error();
+            sync(F_stmt4);
     }
 
 }
+
+int F_stmt5[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt5(){
 
@@ -1116,10 +1228,12 @@ void Parser::stmt5(){
             break;
 
         default:
-            error();
+            sync(F_stmt5);
     }
 
 }
+
+int F_stmt6[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt6(){
 
@@ -1163,10 +1277,12 @@ void Parser::stmt6(){
             break;
 
         default:
-            error();
+            sync(F_stmt6);
     }
 
 }
+
+int F_stmt7[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt7(){
 
@@ -1201,10 +1317,12 @@ void Parser::stmt7(){
             break;
 
         default:
-            error();
+            sync(F_stmt7);
     }
 
 }
+
+int F_stmt8[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt8(){
 
@@ -1243,10 +1361,12 @@ void Parser::stmt8(){
             break;
 
         default:
-            error();
+            sync(F_stmt8);
     }
 
 }
+
+int F_stmt9[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS, PIPE, MULT, DIV, MOD, AMPERSAND, POINT, POINTER, LEFTBRACKET, SEMICOLON,CMMEOF};
 
 void Parser::stmt9(){
 
@@ -1256,18 +1376,18 @@ void Parser::stmt9(){
 
         case POINT:
             match(POINT);
-            match(ID);
+            matchOrSync(ID, F_stmt9);
             expr();
             break;
         case POINTER:
             match(POINTER);
-            match(ID);
+            matchOrSync(ID,F_stmt9);
             expr();
             break;
         case LEFTBRACKET:
             match(LEFTBRACKET);
             expr();
-            match(RIGHTBRACKET);
+            matchOrSync(RIGHTBRACKET,F_stmt9);
             expr();
             break;
         case ASSIGN:
@@ -1289,10 +1409,12 @@ void Parser::stmt9(){
         case SEMICOLON:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_stmt9);
     }
 
 }
+
+int F_caseBlock[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::caseblock(){
 
@@ -1305,26 +1427,28 @@ void Parser::caseblock(){
             {
                 case NUMINT:
                     match(NUMINT);
-                    match(COLON);
+                    matchOrSync(COLON,F_caseBlock);
                     stmtList();
                     caseblock2();
                     break;
                 case NUMFLOAT:
                     match(NUMFLOAT);
-                    match(COLON);
+                    matchOrSync(COLON,F_caseBlock);
                     stmtList();
                     caseblock2();
                     break;
                 default:
-                    error();
+                    sync(F_caseBlock); //TODO ver oq fazer aqui);
             }
             break;
         default:
-            error();
+            sync(F_caseBlock);
 
     }
 
 }
+
+int F_caseBlock2[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::caseblock2(){
 
@@ -1337,24 +1461,24 @@ void Parser::caseblock2(){
             {
                 case NUMINT:
                     match(NUMINT);
-                    match(COLON);
+                    matchOrSync(COLON,F_caseBlock2);
                     stmtList();
                     caseblock2();
                     break;
                 case NUMFLOAT:
                     match(NUMFLOAT);
-                    match(COLON);
+                    matchOrSync(COLON,F_caseBlock2);
                     stmtList();
                     caseblock2();
                     break;
                 default:
-                    error();
+                    sync(F_caseBlock2); //TODO ver oq fazer aqui
             }
             break;
         case RIGHTBRACE:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_caseBlock2);
 
     }
 
@@ -1363,6 +1487,8 @@ void Parser::caseblock2(){
 
 
 }
+
+int F_exprList[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::exprList(){
 
@@ -1385,7 +1511,7 @@ void Parser::exprList(){
         case RIGHTPARENTHESES:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_exprList);
 
     }
 
@@ -1393,14 +1519,36 @@ void Parser::exprList(){
 
 }
 
-void Parser::exprListTail(){
+int F_exprListTail[]={2,RIGHTPARENTHESES,CMMEOF};
+
+void Parser::exprListTail() {
+
 
     printf("exprListTail\n");
-    expr();
-    exprListTail2();
+    switch (this->token->token) {
+        case MINUS:
+        case NOT:
+        case PLUS:
+        case LEFTPARENTHESES:
+        case ID:
+        case NUMINT:
+        case NUMFLOAT:
+        case LITERAL:
+        case AMPERSAND:
+        case MULT:
+        case TRUE:
+        case FALSE:
+            expr();
+            exprListTail2();
+            break;
+        default:
+            sync(F_exprListTail);
 
+
+    }
 }
-//minus not plus leftparentheses id num literal ascii ampersand mult true false
+
+int F_exprListTail2[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::exprListTail2(){
 
@@ -1413,19 +1561,43 @@ void Parser::exprListTail2(){
         case RIGHTPARENTHESES:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_exprListTail2);
 
     }
 
 }
 
-void Parser::expr(){
+int F_expr[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
+void Parser::expr(){ //TODO FAZER SWITCH
 
     printf("expr\n");
-    expr1();
-    expr_l();
+
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr1();
+            expr_l();
+            break;
+        default:
+            sync(F_expr);
+
+    }
+
 
 }
+
+int F_expr_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr_l(){
 
@@ -1461,19 +1633,42 @@ void Parser::expr_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr_l);
 
     }
 
 }
 
+int F_expr1[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr1(){
 
     printf("expr1\n");
-    expr2();
-    expr1_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr2();
+            expr1_l();
+            break;
+        default:
+            sync(F_expr1);
+
+    }
+
 
 }
+
+int F_expr1_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr1_l(){
 
@@ -1508,19 +1703,41 @@ void Parser::expr1_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr1_l);
 
     }
 
 }
 
+int F_expr2[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr2(){
 
     printf("expr2\n");
-    expr3();
-    expr2_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr3();
+            expr2_l();
+            break;
+        default:
+            sync(F_expr2);
+
+    }
 
 }
+
+int F_expr2_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr2_l(){
 
@@ -1555,18 +1772,41 @@ void Parser::expr2_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr2_l);
     }
 
 }
 
+int F_expr3[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr3(){
 
     printf("expr3\n");
-    expr4();
-    expr3_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr4();
+            expr3_l();
+            break;
+        default:
+            sync(F_expr3);
+
+    }
+
 
 }
+
+int F_expr3_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr3_l(){
 
@@ -1606,18 +1846,41 @@ void Parser::expr3_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr3_l);
     }
 
 }
 
+int F_expr4[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr4(){
 
     printf("expr4\n");
-    expr5();
-    expr4_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr5();
+            expr4_l();
+            break;
+        default:
+            sync(F_expr4);
+
+    }
+
 
 }
+
+int F_expr4_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr4_l(){
 
@@ -1665,18 +1928,41 @@ void Parser::expr4_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr4_l);
     }
 
 }
 
+int F_expr5[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr5(){
 
     printf("expr5\n");
-    expr6();
-    expr5_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr6();
+            expr5_l();
+            break;
+        default:
+            sync(F_expr5);
+
+    }
+
 
 }
+
+int F_expr5_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr5_l(){
 
@@ -1720,18 +2006,41 @@ void Parser::expr5_l(){
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr5_l);
     }
 
 }
 
+int F_expr6[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
+
 void Parser::expr6() {
 
     printf("expr6\n");
-    expr7();
-    expr6_l();
+    switch (this->token->token) {
+        case ID:
+        case PLUS:
+        case NOT:
+        case MINUS:
+        case LEFTPARENTHESES:
+        case FALSE:
+        case TRUE:
+        case MULT:
+        case AMPERSAND:
+        case LITERAL:
+        case NUMFLOAT:
+        case NUMINT:
+            expr7();
+            expr6_l();
+            break;
+        default:
+            sync(F_expr6);
+
+    }
+
 
 }
+
+int F_expr6_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr6_l() {
 
@@ -1778,11 +2087,13 @@ void Parser::expr6_l() {
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_expr6_l);
 
     }
 
 }
+
+int F_expr7[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr7() {
 
@@ -1804,10 +2115,15 @@ void Parser::expr7() {
         case TRUE:
         case FALSE:
             expr8();
+            break;
+        default:
+            sync(F_expr7);
     }
 
     //	leftparentheses id num literal ascii ampersand mult true false
 }
+
+int F_expr8[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::expr8() {
 
@@ -1828,9 +2144,14 @@ void Parser::expr8() {
         case TRUE:
         case FALSE:
             primary();
+            break;
+        default:
+            sync(F_expr8);
     }
 
 }
+
+int F_primary[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::primary() {
 
@@ -1872,8 +2193,11 @@ void Parser::primary() {
             match(FALSE);
             primary3();
             break;
+        default:
+            sync(F_primary);
     }
 }
+int F_primary2[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::primary2() {
 
@@ -1882,7 +2206,7 @@ void Parser::primary2() {
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
             exprList();
-            match(RIGHTPARENTHESES);
+            matchOrSync(RIGHTPARENTHESES,F_primary2);
             break;
         case SEMICOLON:
         case ASSIGN:
@@ -1909,10 +2233,12 @@ void Parser::primary2() {
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_primary2);
     }
 
 }
+
+int F_primary3[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::primary3() {
 
@@ -1920,18 +2246,18 @@ void Parser::primary3() {
     switch(this->token->token){
         case POINTER:
             match(POINTER);
-            match(ID);
+            matchOrSync(ID,F_primary3);
             primary3();
             break;
         case POINT:
             match(POINT);
-            match(ID);
+            matchOrSync(ID,F_primary3);
             primary3();
             break;
         case LEFTBRACKET:
             match(LEFTBRACKET);
             expr();
-            match(RIGHTBRACKET);
+            matchOrSync(RIGHTBRACKET,F_primary3);
             primary3();
             break;
         case SEMICOLON:
@@ -1956,10 +2282,12 @@ void Parser::primary3() {
         case RIGHTBRACKET:
             cout<<"epsilon"<<endl; return;
         default:
-            error();
+            sync(F_primary3);
     }
 
 }
+
+int F_unaryOp[]={13,MINUS,NOT,PLUS,LEFTPARENTHESES,ID,NUMINT,NUMFLOAT,LITERAL,AMPERSAND,MULT,TRUE,FALSE,CMMEOF};
 
 void Parser::unaryOp() {
 
@@ -1974,8 +2302,12 @@ void Parser::unaryOp() {
         case PLUS:
             match(PLUS);
             break;
+        default:
+            sync(F_unaryOp);
     }
 }
+
+int F_pointer[]={2,ID,CMMEOF};
 
 void Parser::pointer() {
 
@@ -1986,9 +2318,11 @@ void Parser::pointer() {
             break;
         case ID:
             cout<<"epsilon"<<endl; return;
-        default: error();
+        default: sync(F_pointer);
     }
 }
+
+int F_type[]={3,POINTER,ID,CMMEOF};
 
 void Parser::type() {
 
@@ -2015,9 +2349,14 @@ void Parser::type() {
         case DOUBLE:
             match(DOUBLE);
             break;
+        default:
+            sync(F_type);
 
     }
 }
+
+int F_typeCompl[]={3,POINTER,ID,CMMEOF};
+
 void Parser::typeCompl() {
 
     printf("typeCompl\n");
@@ -2040,6 +2379,8 @@ void Parser::typeCompl() {
         case DOUBLE:
             match(DOUBLE);
             break;
+        default:
+            sync(F_typeCompl);
 
     }
 }

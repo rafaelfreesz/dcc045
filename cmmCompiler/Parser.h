@@ -4,18 +4,21 @@
 
 #ifndef CMMCOMPILER_PARSER_H
 #define CMMCOMPILER_PARSER_H
-
-
 #include "LexicalAnalyzer.h"
-
 #include <iostream>
 #define FIRSTTOKEN  -1
+
+
+
 using namespace std;
 class Parser {
 public:
 
     static void parse(); //Depois vai retornar a raiz da arvore
     void match(int token);
+    void matchOrSync(int token, int *nonTeminal);
+    void error();
+    void sync(int* nonTerminal);
 
     //Nonterminal functions
     void program() ;
@@ -82,8 +85,6 @@ public:
     void typeCompl() ;
 
 
-
-    void error();
     string translate(int token);
 
 
