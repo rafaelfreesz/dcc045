@@ -3,10 +3,10 @@
 #include "Parser.h"
 
 //Print Functions
-void printToken(Token* token);
+//void printToken(Token* token);
 void printLexicalAnalyser();
 void printSymbolTables();
-const char* translateState(int state);
+//const char* translateState(int state);
 void clearLexicalAnalyzer();
 
 int main(int argc, char *argv[]) {
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 }
 
 //Function to print Token data
-void printToken(Token* token){
+/*void printToken(Token* token){
 
     if(token->token >= 561 && token->token <= 581){
 
@@ -56,7 +56,7 @@ void printToken(Token* token){
 
         free(tokemLexem);
     }
-}
+}*/
 
 //Function to print Lexical Analyzer data for test
 void printLexicalAnalyser(){
@@ -160,7 +160,7 @@ void printSymbolTables(){
 
 }
 //Translate a state or Hash number to referred string
-const char* translateState(int state){
+/*const char* translateState(int state){
     switch (state) {
         case 1:
             return "COLON";
@@ -277,4 +277,4 @@ const char* translateState(int state){
 
     }
     return NULL;
-}
+}*/

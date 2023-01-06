@@ -5,12 +5,14 @@
 #ifndef CMMCOMPILER_PARSER_H
 #define CMMCOMPILER_PARSER_H
 #include "LexicalAnalyzer.h"
+#include "Ast.h"
 #include <iostream>
 #define FIRSTTOKEN  -1
 
 
 
 using namespace std;
+
 class Parser {
 public:
 

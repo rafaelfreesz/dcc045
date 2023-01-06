@@ -614,3 +614,146 @@ void clearLexicalAnalyzer(){
     c_deleteSymbolTable(reservedWordsSymbolTable);
     c_deleteSymbolTable(identifiersSymbolTable);
 }
+//Translate a state or Hash number to referred string
+const char* translateState(int state){
+    switch (state) {
+        case 1:
+            return "COLON";
+        case 2:
+            return "MOD";
+        case 3:
+            return "PLUS";
+        case 4:
+            return "MULT";
+        case 5:
+            return "CMMEOF";
+        case 14:
+            return "NOT";
+        case 13:
+            return "NEQ";
+        case 17:
+            return "GREAT";
+        case 16:
+            return "GEQ";
+        case 20:
+            return "LEQ";
+        case 19:
+            return "LESS";
+        case 23:
+            return "EQ";
+        case 22:
+            return "ASSIGN";
+        case 27:
+            return "DIV";
+        case 35:
+            return "LITERAL";
+        case 11:
+            return "RIGHTPARENTHESES";
+        case 10:
+            return "LEFTPARENTHESES";
+        case 9:
+            return "RIGHTBRACKET";
+        case 8:
+            return "LEFTBRACKET";
+        case 7:
+            return "RIGHTBRACE";
+        case 6:
+            return "LEFTBRACE";
+        case 56:
+            return "ID";
+        case 54:
+            return "POINT";
+        case 53:
+            return "NUMFLOAT";
+        case 46:
+            return "NUMINT";
+        case 43:
+            return "pointer";
+        case 44:
+            return "MINUS";
+        case 40:
+            return "AND";
+        case 41:
+            return "AMBERSAND";
+        case 37:
+            return "OR";
+        case 38:
+            return "PIPE";
+        case 57:
+            return "SEMICOLON";
+        case 58:
+            return "COMMA";
+        case 561:
+            return "TYPEDEF";
+        case 562:
+            return "STRUCT";
+        case 563:
+            return "LONG";
+        case 564:
+            return "INT";
+        case 565:
+            return "FLOAT";
+        case 566:
+            return "BOOL";
+        case 567:
+            return "CHAR";
+        case 568:
+            return "DOUBLE";
+        case 569:
+            return "IF";
+        case 570:
+            return "WHILE";
+        case 571:
+            return "SWITCH";
+        case 572:
+            return "BREAK";
+        case 573:
+            return "PRINT";
+        case 574:
+            return "READLN";
+        case 575:
+            return "RETURN";
+        case 576:
+            return "THROW";
+        case 577:
+            return "TRY";
+        case 578:
+            return "CATCH";
+        case 579:
+            return "CASE";
+        case 580:
+            return "FOR";
+        case 581:
+            return "ELSE";
+        case 582:
+            return "DEFAULT";
+        case 30:
+            return "UNEXPECTEDEOF";
+        case 48:
+            return "MALFORMEDNUMBER";
+        case 49:
+            return "UNEXPECTEDENTRY";
+
+    }
+    return NULL;
+};
+//Function to print Token data
+void printToken(Token* token){
+
+    if(token->token >= 561 && token->token <= 581){
+
+        fprintf(stdout, "%s\n", translateState(token->token));
+
+    }else{
+
+
+        char* tokemLexem= getLexem(token->lexemIndex, token->lexemIndex + token->lexemSize);
+        if(token->token==ID || token->token==NUMINT || token->token==NUMFLOAT || token->token==LITERAL){
+            fprintf(stdout, "%s.%s\n", translateState(token->token), tokemLexem);
+        }else{
+            fprintf(stdout, "%s\n", translateState(token->token));
+        }
+
+        free(tokemLexem);
+    }
+}

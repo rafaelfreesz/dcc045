@@ -55,4 +55,6 @@ int isNumber(char c);
 int isWhiteSpace(char c);
 
 extern void clearLexicalAnalyzer();
+void printToken(Token* token);
+const char* translateState(int state);
 #endif //CMMCOMPILER_LEXICALANALYZER_H

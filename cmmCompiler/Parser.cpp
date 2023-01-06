@@ -14,11 +14,8 @@ void Parser::error() {
 }
 void Parser::matchOrSync(int token, int *nonTeminal) {
     if (token == this->token->token) {
-        cout<<"---- "<<translate(token);
         this->token = nextToken();
-        cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
     } else {
-        cout<<"Error line "<<to_string(analyser.lineCounter)<<". Expected "<<translate(token)<<endl;
         sync(nonTeminal);
     }
 }
@@ -31,7 +28,6 @@ void Parser::match(int token) {
             cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
         } else {
             cout<<"Unexpected token "<< translate(this->token->token)<<". Expected: "<<translate(token)<<endl;
-            //exit(100);
         }
     }else{
         this->token = nextToken();
@@ -39,17 +35,17 @@ void Parser::match(int token) {
     }
 }
 void Parser::sync(int *nonTerminal) {
-    cout<<"Sync: Given -> "+ translate(this->token->token);
+    cout<<"Syntactic Error: Given: "+ translate(this->token->token);
     while(this->token->token!=CMMEOF) {
         this->token=nextToken();
         for (int i = 1; i < nonTerminal[0]; i++) {
             if(this->token->token==nonTerminal[i]){
-                cout<<", returned " + translate(this->token->token)<<endl;
+                cout<<", expected: " + translate(this->token->token)<<endl;
                 return;
             }
         }
     }
-    cout<<", returned " + translate(this->token->token)<<endl;
+    cout<<", expected " + translate(this->token->token)<<endl;
 }
 void Parser::parse() {
 
