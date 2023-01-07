@@ -3,4 +3,4 @@ project(cmmCompiler)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cmmCompiler main.cpp ErrorManager.cpp ErrorManager.h SymbolTable.cpp SymbolTable.h LexicalAnalyzer.cpp LexicalAnalyzer.h Parser.cpp Parser.h)
+add_executable(cmmCompiler main.cpp ErrorManager.cpp ErrorManager.h SymbolTable.cpp SymbolTable.h LexicalAnalyzer.cpp LexicalAnalyzer.h Parser.cpp Parser.h Visitor.cpp Visitor.h)
