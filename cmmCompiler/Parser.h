@@ -5,7 +5,6 @@
 #ifndef CMMCOMPILER_PARSER_H
 #define CMMCOMPILER_PARSER_H
 #include "LexicalAnalyzer.h"
-#include "Ast.h"
 #include <iostream>
 #define FIRSTTOKEN  -1
 
@@ -19,7 +18,6 @@ public:
     static void parse(); //Depois vai retornar a raiz da arvore
     void match(int token);
     void matchOrSync(int token, int *nonTeminal);
-    void error();
     void sync(int* nonTerminal);
 
     //Nonterminal functions
@@ -28,7 +26,6 @@ public:
     void declprefix();
     void declsulfix() ;
     void varDeclSulfix();
-    void varDecl();
     void varDecl2();
     void functionDecl();
     void functionBody();
@@ -85,9 +82,7 @@ public:
     void pointer();
     void type() ;
     void typeCompl() ;
-
-
-    string translate(int token);
+    char* translate(int token);
 
 
 private:

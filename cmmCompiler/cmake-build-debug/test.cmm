@@ -14,12 +14,5 @@ int func(){
         a = 5 * (7 / 9);
     }
 
-    try {
-
-        a = 2*7
-
-    }catch(){
-        throw {
-    }
 
 }

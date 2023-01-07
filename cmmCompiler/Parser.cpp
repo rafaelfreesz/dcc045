@@ -7,13 +7,10 @@ Parser::Parser() {
 Parser::~Parser() {
 
 }
-void Parser::error() {
-    string transltation=translate(this->token->token);
-    cout<<"Error! token "+ transltation<<endl;
-    //exit(100);
-}
 void Parser::matchOrSync(int token, int *nonTeminal) {
     if (token == this->token->token) {
+        fprintf(stdout,"MATCH:");
+        printToken(this->token);
         this->token = nextToken();
     } else {
         sync(nonTeminal);
@@ -23,45 +20,52 @@ void Parser::match(int token) {
 
     if(token != FIRSTTOKEN) {
         if (token == this->token->token) {
-            cout<<"---- "<<translate(token);
+            fprintf(stdout,"MATCH:");
+            printToken(this->token);
             this->token = nextToken();
-            cout<<"----> "<< translate(this->token->token)<<" ---"<<endl;
         } else {
-            cout<<"Unexpected token "<< translate(this->token->token)<<". Expected: "<<translate(token)<<endl;
+            fprintf(stdout,"Unexpected token %s, expected: %s", translate(this->token->token), translate(token));
+            printToken(this->token);
         }
     }else{
         this->token = nextToken();
-        cout<<" ---- "<<translate(this->token->token)<<endl;
     }
 }
 void Parser::sync(int *nonTerminal) {
-    cout<<"Syntactic Error: Given: "+ translate(this->token->token);
+    fprintf(stdout,"Syntactic Error: Given: %s", translate(this->token->token));
     while(this->token->token!=CMMEOF) {
         this->token=nextToken();
         for (int i = 1; i < nonTerminal[0]; i++) {
             if(this->token->token==nonTerminal[i]){
-                cout<<", expected: " + translate(this->token->token)<<endl;
+                fprintf(stdout,", expected: %s\n", translate(this->token->token));
                 return;
             }
         }
     }
-    cout<<", expected " + translate(this->token->token)<<endl;
+    fprintf(stdout,", expected: %s\n", translate(this->token->token));
+}
+char* strs(){
+    return "123";
 }
 void Parser::parse() {
 
     Parser* parser = new Parser();
     parser->match(FIRSTTOKEN);
     parser->program();
+
+
     cout<<"SUCCESS!"<<endl;
 
 
 }
 
+//---------Parse Functions------------//
+
 int F_program[]={1,CMMEOF};
 
 void Parser::program() {
 
-    printf("PROGRAM\n");
+    fprintf(stdout,"Program\n");
     switch (this->token->token) {
         case DOUBLE:
         case CHAR:
@@ -89,7 +93,7 @@ int F_declPrefix[]={5,LEFTPARENTHESES,SEMICOLON,LEFTBRACKET,COMMA, CMMEOF};
 
 void Parser::declprefix() {
 
-    printf("declprefix\n");
+    fprintf(stdout,"DeclPrefix\n");
     switch (this->token->token) {
         case INT:
         case LONG:
@@ -112,10 +116,9 @@ void Parser::declprefix() {
 
 int F_declSulfix[]={1,CMMEOF};
 
-
 void Parser::declsulfix() {
 
-    printf("declsulfix\n");
+    fprintf(stdout,"DeclSulfix\n");
     switch (this->token->token){
 
         case LEFTPARENTHESES:
@@ -133,14 +136,13 @@ void Parser::declsulfix() {
             sync(F_declSulfix);
 
     }
-
 }
 
 int F_program2[]={1,CMMEOF};
 
 void Parser::program2(){
 
-    printf("program2\n");
+    fprintf(stdout,"Program2\n");
 
     switch (this->token->token) {
         case DOUBLE:
@@ -155,11 +157,11 @@ void Parser::program2(){
             break;
         case CMMEOF:
             match(CMMEOF);
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_program2);
     }
-
 }
 
 int F_valDeclSulfix[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
@@ -167,7 +169,7 @@ int F_valDeclSulfix[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
 void Parser::varDeclSulfix(){
 
-    printf("varDeclSulfix\n");
+    fprintf(stdout,"VarDeclSulfix\n");
     switch (this->token->token) {
         case LEFTBRACKET:
         case COMMA:
@@ -177,39 +179,7 @@ void Parser::varDeclSulfix(){
             matchOrSync(SEMICOLON,F_valDeclSulfix);
             break;
         default:sync(F_declSulfix);
-
     }
-
-}
-
-int F_varDecl[]={1,CMMEOF};
-
-
-void Parser::varDecl(){
-
-    printf("varDecl\n");
-
-    switch (this->token->token) {
-        case INT:
-        case FLOAT:
-        case LONG:
-        case DOUBLE:
-        case BOOL:
-        case ID:
-        case CHAR:
-            type();
-            pointer();
-            matchOrSync(ID,F_varDecl);
-            array();
-            idList2();
-            matchOrSync(SEMICOLON,F_varDecl);
-            varDecl2();
-            break;
-        default: sync(F_varDecl);
-
-    }
-
-
 }
 
 int F_varDecl2[]={2,RIGHTBRACE,CMMEOF};
@@ -217,7 +187,7 @@ int F_varDecl2[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::varDecl2(){
 
-    printf("varDecl2\n");
+    fprintf(stdout,"VarDecl2\n");
     switch (this->token->token) {
         case INT:
         case FLOAT:
@@ -235,21 +205,19 @@ void Parser::varDecl2(){
             varDecl2();
             break;
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_varDecl2);
 
-
     }
-
-
 }
 
 int F_functionDecl[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
 void Parser::functionDecl(){
 
-    printf("functionDecl\n");
+    fprintf(stdout,"FunctionDecl\n");
     switch (this->token->token) {
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
@@ -270,7 +238,7 @@ int F_functionBody[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::functionBody() {
 
-    printf("functionBody\n");
+    fprintf(stdout,"FunctionBody\n");
     switch (this->token->token) {
         case LONG:
         case INT:
@@ -315,7 +283,8 @@ void Parser::functionBody() {
             stmtList2();
             break;
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_functionBody);
 
@@ -326,10 +295,9 @@ void Parser::functionBody() {
 
 int F_functionBody2[]={2,RIGHTBRACE,CMMEOF};
 
-
 void Parser::functionBody2() {
 
-    printf("functionBody2\n");
+    fprintf(stdout,"FunctionBody2\n");
     switch (this->token->token) {
         case ID:
             match(ID);
@@ -381,7 +349,7 @@ int F_binOp[]={12,MINUS,NOT,PLUS,LEFTPARENTHESES,ID,NUMFLOAT,NUMINT,LITERAL,AMPE
 
 void Parser::binOp() {
 
-    printf("binOp\n");
+    fprintf(stdout,"BinOp\n");
     switch (this->token->token) {
         case PLUS:
             match(PLUS);
@@ -436,9 +404,8 @@ void Parser::binOp() {
 
 int F_functionBody3[]={2,RIGHTBRACE,CMMEOF};
 
-
 void Parser::functionBody3() {
-    printf("functionBody3\n");
+    fprintf(stdout,"FunctionBody3\n");
     switch (this->token->token) {
         case COMMA:
             match(COMMA);
@@ -460,7 +427,7 @@ int F_idList[]={2,SEMICOLON, CMMEOF};
 
 void Parser::idList(){
 
-    printf("idList\n");
+    fprintf(stdout,"IdList\n");
     switch (this->token->token) {
         case ID:
         case MULT:
@@ -479,7 +446,7 @@ int F_idList2[]={2,SEMICOLON, CMMEOF};
 
 void Parser::idList2(){
 
-    printf("idList2\n");
+    fprintf(stdout,"IdList2\n");
     switch (this->token->token)
     {
         case COMMA:
@@ -491,7 +458,8 @@ void Parser::idList2(){
             break;
 
         case SEMICOLON:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
 
         default:
             sync(F_idList2);
@@ -505,7 +473,7 @@ int F_typeDecl[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
 void Parser::typedecl() {
 
-    printf("typedecl\n");
+    fprintf(stdout,"TypeDecl\n");
     switch (this->token->token) {
         case TYPEDEF:
             match(TYPEDEF);
@@ -530,7 +498,7 @@ int F_array[]={4,RIGHTPARENTHESES,SEMICOLON,COMMA,CMMEOF};
 
 void Parser::array() {
 
-    printf("array\n");
+    fprintf(stdout,"Array\n");
     switch (this->token->token) {
         case LEFTBRACKET:
             match(LEFTBRACKET);
@@ -542,7 +510,8 @@ void Parser::array() {
         case RIGHTPARENTHESES:
         case SEMICOLON:
         case COMMA:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_array);
     }
@@ -553,7 +522,7 @@ int F_formalList[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::formalList(){
 
-    printf("formalList\n");
+    fprintf(stdout,"FormalList\n");
     switch (this->token->token)
     {
         case LONG:
@@ -571,7 +540,8 @@ void Parser::formalList(){
             break;
 
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
 
         default:
             sync(F_formalList);
@@ -584,7 +554,7 @@ int F_formalRest[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::formalRest(){
 
-    printf("formalRest\n");
+    fprintf(stdout,"FormalRest\n");
     switch (this->token->token)
     {
         case COMMA:
@@ -597,7 +567,8 @@ void Parser::formalRest(){
             break;
 
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
 
         default:
             sync(F_formalRest);
@@ -610,7 +581,7 @@ int F_stmtList[]={3, CASE,RIGHTBRACE,CMMEOF};
 
 void Parser::stmtList(){
 
-    printf("stmtList\n");
+    fprintf(stdout,"StmtList\n");
     switch (this->token->token) {
         case ID:
         case NOT:
@@ -650,7 +621,7 @@ int F_stmtList2[]={3,CASE,RIGHTBRACE,CMMEOF};
 
 void Parser::stmtList2(){
 
-    printf("stmtList2\n");
+    fprintf(stdout,"StmtList2\n");
     switch (this->token->token)
     {
         case  IF:
@@ -681,7 +652,8 @@ void Parser::stmtList2(){
 
         case CASE:
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
 
         default:
             sync(F_stmtList2);
@@ -693,7 +665,7 @@ int F_stmt[]={27,CASE, ELSE, CATCH, IF, WHILE, SWITCH, BREAK, PRINT, READLN, RET
 
 void Parser::stmt(){
 
-    printf("stmt\n");
+    fprintf(stdout,"Stmt\n");
     switch (this->token->token)
     {
         case IF:
@@ -808,7 +780,7 @@ int F_stmtCompl[]={24,IF, WHILE, SWITCH, BREAK, PRINT, READLN, RETURN, THROW, LE
 
 void Parser::stmtCompl(){
 
-    printf("stmtCompl\n");
+    fprintf(stdout,"StmtCompl\n");
     switch (this->token->token)
     {
         case IF:
@@ -918,7 +890,7 @@ int F_stmtPrim[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MIN
 
 void Parser::stmtPrim(){
 
-    printf("stmtPrim\n");
+    fprintf(stdout,"StmtPrim\n");
     switch (this->token->token)
     {
         case LEFTPARENTHESES:
@@ -948,7 +920,7 @@ int F_stmtPrim2[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MI
 
 void Parser::stmtPrim2(){
 
-    printf("stmtPrim2\n");
+    fprintf(stdout,"StmtPrim2\n");
     switch (this->token->token)
     {
 
@@ -995,7 +967,7 @@ int F_stmtPrim3[]={2,SEMICOLON,CMMEOF};
 
 void Parser::stmtPrim3(){
 
-    printf("stmtPrim3\n");
+    fprintf(stdout,"StmtPrim3\n");
     switch (this->token->token)
     {
 
@@ -1026,7 +998,7 @@ int F_stmt1[]={2,SEMICOLON,CMMEOF};
 
 void Parser::stmt1(){
 
-    printf("stmt1\n");
+    fprintf(stdout,"Stmt1\n");
     switch (this->token->token)
     {
         case LEFTPARENTHESES:
@@ -1069,7 +1041,7 @@ int F_stmt2[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt2(){
 
-    printf("stmt2\n");
+    fprintf(stdout,"Stmt2\n");
     switch (this->token->token)
     {
 
@@ -1109,7 +1081,7 @@ int F_stmt3[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt3(){
 
-    printf("stmt3\n");
+    fprintf(stdout,"Stmt3\n");
     switch (this->token->token)
     {
 
@@ -1150,7 +1122,7 @@ int F_stmt4[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt4(){
 
-    printf("stmt4\n");
+    fprintf(stdout,"Stmt4\n");
     switch (this->token->token)
     {
 
@@ -1190,7 +1162,7 @@ int F_stmt5[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt5(){
 
-    printf("stmt5\n");
+    fprintf(stdout,"Stmt5\n");
     switch (this->token->token)
     {
 
@@ -1233,7 +1205,7 @@ int F_stmt6[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt6(){
 
-    printf("stmt6\n");
+    fprintf(stdout,"Stmt6\n");
     switch (this->token->token)
     {
 
@@ -1282,7 +1254,7 @@ int F_stmt7[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt7(){
 
-    printf("stmt7\n");
+    fprintf(stdout,"Stmt7\n");
     switch (this->token->token)
     {
 
@@ -1322,7 +1294,7 @@ int F_stmt8[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt8(){
 
-    printf("stmt8\n");
+    fprintf(stdout,"Stmt8\n");
 
     switch (this->token->token)
     {
@@ -1366,7 +1338,7 @@ int F_stmt9[]={21, ASSIGN, OR, AND, EQ, NEQ, LESS, LEQ, GREAT, GEQ, PLUS, MINUS,
 
 void Parser::stmt9(){
 
-    printf("stmt9\n");
+    fprintf(stdout,"Stmt9\n");
     switch (this->token->token)
     {
 
@@ -1403,7 +1375,8 @@ void Parser::stmt9(){
         case MOD:
         case AMPERSAND:
         case SEMICOLON:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_stmt9);
     }
@@ -1414,7 +1387,7 @@ int F_caseBlock[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::caseblock(){
 
-    printf("caseblock\n");
+    fprintf(stdout,"Saseblock\n");
 
     switch (this->token->token) {
         case CASE:
@@ -1448,7 +1421,7 @@ int F_caseBlock2[]={2,RIGHTBRACE,CMMEOF};
 
 void Parser::caseblock2(){
 
-    printf("caseblock2\n");
+    fprintf(stdout,"Caseblock2\n");
 
     switch (this->token->token) {
         case CASE:
@@ -1472,7 +1445,8 @@ void Parser::caseblock2(){
             }
             break;
         case RIGHTBRACE:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_caseBlock2);
 
@@ -1488,7 +1462,7 @@ int F_exprList[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::exprList(){
 
-    printf("exprList\n");
+    fprintf(stdout,"ExprList\n");
     switch (this->token->token) {
         case MINUS:
         case NOT:
@@ -1505,7 +1479,8 @@ void Parser::exprList(){
             exprListTail();
             break;
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_exprList);
 
@@ -1520,7 +1495,7 @@ int F_exprListTail[]={2,RIGHTPARENTHESES,CMMEOF};
 void Parser::exprListTail() {
 
 
-    printf("exprListTail\n");
+    fprintf(stdout,"ExprListTail\n");
     switch (this->token->token) {
         case MINUS:
         case NOT:
@@ -1548,14 +1523,15 @@ int F_exprListTail2[]={2,RIGHTPARENTHESES,CMMEOF};
 
 void Parser::exprListTail2(){
 
-    printf("exprListTail2\n");
+    fprintf(stdout,"ExprListTail2\n");
     switch (this->token->token) {
         case COMMA:
             match(COMMA);
             exprListTail();
             break;
         case RIGHTPARENTHESES:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_exprListTail2);
 
@@ -1567,7 +1543,7 @@ int F_expr[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PI
 
 void Parser::expr(){ //TODO FAZER SWITCH
 
-    printf("expr\n");
+    fprintf(stdout,"Expr\n");
 
     switch (this->token->token) {
         case ID:
@@ -1597,7 +1573,7 @@ int F_expr_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,
 
 void Parser::expr_l(){
 
-    printf("expr_l\n");
+    fprintf(stdout,"Expr_l\n");
 
     switch (this->token->token) {
         case ASSIGN:
@@ -1627,7 +1603,8 @@ void Parser::expr_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr_l);
 
@@ -1639,7 +1616,7 @@ int F_expr1[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr1(){
 
-    printf("expr1\n");
+    fprintf(stdout,"Expr1\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -1668,7 +1645,7 @@ int F_expr1_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr1_l(){
 
-    printf("expr1_l\n");
+    fprintf(stdout,"Expr1_l\n");
     switch (this->token->token) {
         case OR:
             match(OR);
@@ -1697,7 +1674,8 @@ void Parser::expr1_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr1_l);
 
@@ -1709,7 +1687,7 @@ int F_expr2[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr2(){
 
-    printf("expr2\n");
+    fprintf(stdout,"Expr2\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -1737,7 +1715,7 @@ int F_expr2_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr2_l(){
 
-    printf("expr2_l\n");
+    fprintf(stdout,"Expr2_l\n");
     switch (this->token->token) {
         case AND:
             match(AND);
@@ -1766,7 +1744,8 @@ void Parser::expr2_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr2_l);
     }
@@ -1777,7 +1756,7 @@ int F_expr3[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr3(){
 
-    printf("expr3\n");
+    fprintf(stdout,"Expr3\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -1806,7 +1785,7 @@ int F_expr3_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr3_l(){
 
-    printf("expr3_l\n");
+    fprintf(stdout,"Expr3_l\n");
     switch (this->token->token)
     {
         case EQ:
@@ -1840,7 +1819,8 @@ void Parser::expr3_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr3_l);
     }
@@ -1851,7 +1831,7 @@ int F_expr4[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr4(){
 
-    printf("expr4\n");
+    fprintf(stdout,"Expr4\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -1880,7 +1860,7 @@ int F_expr4_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr4_l(){
 
-    printf("expr4_l\n");
+    fprintf(stdout,"Expr4_l\n");
     switch (this->token->token)
     {
         case LESS:
@@ -1922,7 +1902,8 @@ void Parser::expr4_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr4_l);
     }
@@ -1933,7 +1914,7 @@ int F_expr5[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr5(){
 
-    printf("expr5\n");
+    fprintf(stdout,"Expr5\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -1962,7 +1943,7 @@ int F_expr5_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr5_l(){
 
-    printf("expr5_l\n");
+    fprintf(stdout,"Expr5_l\n");
     switch (this->token->token)
     {
         case PLUS:
@@ -2000,7 +1981,8 @@ void Parser::expr5_l(){
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr5_l);
     }
@@ -2011,7 +1993,7 @@ int F_expr6[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr6() {
 
-    printf("expr6\n");
+    fprintf(stdout,"Expr6\n");
     switch (this->token->token) {
         case ID:
         case PLUS:
@@ -2040,7 +2022,7 @@ int F_expr6_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::expr6_l() {
 
-    printf("expr6_l\n");
+    fprintf(stdout,"Expr6_l\n");
     switch(this->token->token){
         case MULT:
             match(MULT);
@@ -2081,7 +2063,8 @@ void Parser::expr6_l() {
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_expr6_l);
 
@@ -2093,7 +2076,7 @@ int F_expr7[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr7() {
 
-    printf("expr7\n");
+    fprintf(stdout,"Expr7\n");
     switch(this->token->token){
         case PLUS:
         case MINUS:
@@ -2123,7 +2106,7 @@ int F_expr8[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,P
 
 void Parser::expr8() {
 
-    printf("expr8\n");
+    fprintf(stdout,"Expr8\n");
     switch(this->token->token){
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
@@ -2151,7 +2134,7 @@ int F_primary[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS
 
 void Parser::primary() {
 
-    printf("primary\n");
+    fprintf(stdout,"Primary\n");
 
     switch(this->token->token){
         case ID:
@@ -2197,7 +2180,7 @@ int F_primary2[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINU
 
 void Parser::primary2() {
 
-    printf("primary2\n");
+    fprintf(stdout,"Primary2\n");
     switch(this->token->token){
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
@@ -2227,7 +2210,8 @@ void Parser::primary2() {
         case POINT:
         case LEFTBRACKET:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_primary2);
     }
@@ -2238,7 +2222,7 @@ int F_primary3[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINU
 
 void Parser::primary3() {
 
-    printf("primary3\n");
+    fprintf(stdout,"Primary3\n");
     switch(this->token->token){
         case POINTER:
             match(POINTER);
@@ -2276,7 +2260,8 @@ void Parser::primary3() {
         case COMMA:
         case RIGHTPARENTHESES:
         case RIGHTBRACKET:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default:
             sync(F_primary3);
     }
@@ -2287,7 +2272,7 @@ int F_unaryOp[]={13,MINUS,NOT,PLUS,LEFTPARENTHESES,ID,NUMINT,NUMFLOAT,LITERAL,AM
 
 void Parser::unaryOp() {
 
-    printf("unaryOp\n");
+    fprintf(stdout,"UnaryOp\n");
     switch(this->token->token){
         case MINUS:
             match(MINUS);
@@ -2307,13 +2292,14 @@ int F_pointer[]={2,ID,CMMEOF};
 
 void Parser::pointer() {
 
-    printf("pointer\n");
+    fprintf(stdout,"Pointer\n");
     switch (this->token->token) {
         case MULT:
             match(MULT);
             break;
         case ID:
-            cout<<"epsilon"<<endl; return;
+            //epsilon
+            return;
         default: sync(F_pointer);
     }
 }
@@ -2322,7 +2308,8 @@ int F_type[]={3,POINTER,ID,CMMEOF};
 
 void Parser::type() {
 
-    printf("type\n");
+    fprintf(stdout,"Type\n");
+
     switch(this->token->token){
         case LONG:
             match(LONG);
@@ -2355,7 +2342,7 @@ int F_typeCompl[]={3,POINTER,ID,CMMEOF};
 
 void Parser::typeCompl() {
 
-    printf("typeCompl\n");
+    fprintf(stdout,"TypeCompl\n");
     switch(this->token->token){
         case LONG:
             match(LONG);
@@ -2381,7 +2368,12 @@ void Parser::typeCompl() {
     }
 }
 
-string Parser::translate(int token) {
+
+void c_parse() {
+    Parser::parse();
+}
+
+char* Parser::translate(int token) {
     switch (token) {
         case ID: return "id";
         case SEMICOLON: return ";";
@@ -2439,9 +2431,4 @@ string Parser::translate(int token) {
         default: return "whrong";
 
     }
-}
-
-
-void c_parse() {
-    Parser::parse();
 }

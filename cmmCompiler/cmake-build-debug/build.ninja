@@ -79,18 +79,6 @@ build CMakeFiles/cmmCompiler.dir/Parser.cpp.obj: CXX_COMPILER__cmmCompiler_Debug
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
   OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
 
-build CMakeFiles/cmmCompiler.dir/Ast.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/Ast.cpp || cmake_object_order_depends_target_cmmCompiler
-  DEP_FILE = CMakeFiles\cmmCompiler.dir\Ast.cpp.obj.d
-  FLAGS = -g -std=gnu++14
-  OBJECT_DIR = CMakeFiles\cmmCompiler.dir
-  OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
-
-build CMakeFiles/cmmCompiler.dir/Visitor.cpp.obj: CXX_COMPILER__cmmCompiler_Debug E$:/Estudos/Faculdade/Disciplinas/Compiladores/Reporitory/cmmCompiler/Visitor.cpp || cmake_object_order_depends_target_cmmCompiler
-  DEP_FILE = CMakeFiles\cmmCompiler.dir\Visitor.cpp.obj.d
-  FLAGS = -g -std=gnu++14
-  OBJECT_DIR = CMakeFiles\cmmCompiler.dir
-  OBJECT_FILE_DIR = CMakeFiles\cmmCompiler.dir
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target cmmCompiler
@@ -99,7 +87,7 @@ build CMakeFiles/cmmCompiler.dir/Visitor.cpp.obj: CXX_COMPILER__cmmCompiler_Debu
 #############################################
 # Link the executable cmmCompiler.exe
 
-build cmmCompiler.exe: CXX_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.cpp.obj CMakeFiles/cmmCompiler.dir/ErrorManager.cpp.obj CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.cpp.obj CMakeFiles/cmmCompiler.dir/Parser.cpp.obj CMakeFiles/cmmCompiler.dir/Ast.cpp.obj CMakeFiles/cmmCompiler.dir/Visitor.cpp.obj
+build cmmCompiler.exe: CXX_EXECUTABLE_LINKER__cmmCompiler_Debug CMakeFiles/cmmCompiler.dir/main.cpp.obj CMakeFiles/cmmCompiler.dir/ErrorManager.cpp.obj CMakeFiles/cmmCompiler.dir/SymbolTable.cpp.obj CMakeFiles/cmmCompiler.dir/LexicalAnalyzer.cpp.obj CMakeFiles/cmmCompiler.dir/Parser.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\cmmCompiler.dir
