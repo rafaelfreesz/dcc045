@@ -24,7 +24,7 @@ void Parser::match(int token) {
             printToken(this->token);
             this->token = nextToken();
         } else {
-            fprintf(stdout,"Unexpected token %s, expected: %s", translate(this->token->token), translate(token));
+            fprintf(stdout,"Unexpected id %s, expected: %s", translate(this->token->token), translate(token));
             printToken(this->token);
         }
     }else{

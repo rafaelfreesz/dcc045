@@ -3,7 +3,7 @@
 #include "Parser.h"
 
 //Print Functions
-//void printToken(Token* token);
+//void printToken(Token* id);
 void printLexicalAnalyser();
 void printSymbolTables();
 //const char* translateState(int state);
@@ -20,11 +20,11 @@ int main(int argc, char *argv[]) {
 
     buildLexemBuffer();
 
-   /* Token* token=nextToken();
-    while(token->token!=CMMEOF){
-        printToken(token);
-        free(token);
-        token=nextToken();
+   /* Token* id=nextToken();
+    while(id->id!=CMMEOF){
+        printToken(id);
+        free(id);
+        id=nextToken();
     }*/
 
     Parser::parse();
@@ -38,20 +38,20 @@ int main(int argc, char *argv[]) {
 }
 
 //Function to print Token data
-/*void printToken(Token* token){
+/*void printToken(Token* id){
 
-    if(token->token >= 561 && token->token <= 581){
+    if(id->id >= 561 && id->id <= 581){
 
-        printf("%s\n", translateState(token->token));
+        printf("%s\n", translateState(id->id));
 
     }else{
 
 
-        char* tokemLexem= getLexem(token->lexemIndex, token->lexemIndex + token->lexemSize);
-        if(token->token==ID || token->token==NUMINT || token->token==NUMFLOAT || token->token==LITERAL){
-            printf("%s.%s\n", translateState(token->token), tokemLexem);
+        char* tokemLexem= getLexem(id->lexemIndex, id->lexemIndex + id->lexemSize);
+        if(id->id==ID || id->id==NUMINT || id->id==NUMFLOAT || id->id==LITERAL){
+            printf("%s.%s\n", translateState(id->id), tokemLexem);
         }else{
-            printf("%s\n", translateState(token->token));
+            printf("%s\n", translateState(id->id));
         }
 
         free(tokemLexem);

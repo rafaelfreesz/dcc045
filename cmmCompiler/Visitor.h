@@ -70,6 +70,7 @@ public:
     virtual void visit (ExpList* expList)=0;
     virtual void visit (Try* aTry)=0;
     virtual void visit (Exp* exp)=0;
+    virtual void visit (ExpVal* expVal)=0;
     virtual void visit (Assign* assign)=0;
     virtual void visit (NameExp* nameExp)=0;
     virtual void visit (PointerValueExp* pointerValueExp)=0;
@@ -114,6 +115,7 @@ public:
     void visit (ExpList* expList) override;
     void visit (Try* aTry) override;
     void visit (Exp* exp) override;
+    void visit (ExpVal* expVal) override;
     void visit (Assign* assign) override;
     void visit (NameExp* nameExp) override;
     void visit (PointerValueExp* pointerValueExp) override;
@@ -135,6 +137,9 @@ public:
 
 class Root{
 public:
+    Root(){};
+    ~Root(){};
+
     virtual void accept(Visitor* v)=0;
 };
 
@@ -176,7 +181,7 @@ public:
     ~FunctionList();
 
     Type* type;
-    Token* token;
+    Token* id;
     VarList* varList;
     StmtList* stmtList;
     FunctionList* functionList;
@@ -231,8 +236,8 @@ public:
 
 class Stmt: public Root{
 public:
-    Stmt();
-    ~Stmt();
+    Stmt(){};
+    ~Stmt(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 };
@@ -264,16 +269,16 @@ public:
     Switch(Exp* exp, CaseBlock* caseBlock);
     ~Switch();
 
-    Exp* exp1;
-    CaseBlock* caseBlock1;
+    Exp* exp;
+    CaseBlock* caseBlock;
 
     void accept(Visitor* v) override {v->visit(this);};
 };
 
 class Break: public Stmt{
 public:
-    Break();
-    ~Break();
+    Break(){};
+    ~Break(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 };
@@ -322,8 +327,8 @@ public:
 
 class Throw: public Stmt{
 public:
-    Throw();
-    ~Throw();
+    Throw(){};
+    ~Throw(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 
@@ -353,8 +358,8 @@ public:
 
 class Exp: public Root{
 public:
-    Exp();
-    ~Exp();
+    Exp(){};
+    ~Exp(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 };
@@ -385,7 +390,7 @@ public:
     ~NameExp();
 
     Exp* exp;
-    Token * token;
+    Token * id;
 
     void accept(Visitor* v) override {v->visit(this);};
 
@@ -397,7 +402,7 @@ public:
     ~PointerValueExp();
 
     Exp* exp;
-    Token * token;
+    Token * id;
 
     void accept(Visitor* v) override {v->visit(this);};
 
@@ -483,7 +488,7 @@ public:
 
 class BooleanOp: public Exp{
 public:
-    BooleanOp(Token booleanOp, Exp* exp, Exp* exp2);
+    BooleanOp(Token *booleanOp, Exp* exp, Exp* exp2);
     ~BooleanOp();
 
     Token * booleanOp;
@@ -495,7 +500,7 @@ public:
 
 class BitwiseOp: public Exp{
 public:
-    BitwiseOp(Token bitwiseOp, Exp* exp, Exp* exp2);
+    BitwiseOp(Token *bitwiseOp, Exp* exp, Exp* exp2);
     ~BitwiseOp();
 
     Token * bitwiseOp;
@@ -507,16 +512,16 @@ public:
 
 class True: public Exp{
 public:
-    True();
-    ~True();
+    True(){};
+    ~True(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 };
 
 class False: public Exp{
 public:
-    False();
-    ~False();
+    False(){};
+    ~False(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 };
