@@ -24,7 +24,7 @@ void Parser::match(int token) {
             printToken(this->token);
             this->token = nextToken();
         } else {
-            fprintf(stdout,"Unexpected id %s, expected: %s", translate(this->token->token), translate(token));
+            fprintf(stdout,"Unexpected primitive %s, expected: %s", translate(this->token->token), translate(token));
             printToken(this->token);
         }
     }else{
@@ -44,15 +44,15 @@ void Parser::sync(int *nonTerminal) {
     }
     fprintf(stdout,", expected: %s\n", translate(this->token->token));
 }
-char* strs(){
-    return "123";
-}
+
 void Parser::parse() {
 
-    Parser* parser = new Parser();
-    parser->match(FIRSTTOKEN);
-    parser->program();
-
+    match(FIRSTTOKEN);
+    this->root=program();
+    //parser->program();
+    fprintf(stdout,"\n\n-----------AST-----------\n");
+    ConcreteVisitor* visitor=new ConcreteVisitor();
+    this->root->accept(visitor);
 
     cout<<"SUCCESS!"<<endl;
 
@@ -63,9 +63,10 @@ void Parser::parse() {
 
 int F_program[]={1,CMMEOF};
 
-void Parser::program() {
+Program * Parser::program() {
 
     fprintf(stdout,"Program\n");
+    Program* program1= nullptr;
     switch (this->token->token) {
         case DOUBLE:
         case CHAR:
@@ -73,64 +74,64 @@ void Parser::program() {
         case BOOL:
         case FLOAT:
         case INT:
-        case LONG:
-            declprefix();
-            declsulfix(); break;
-        case TYPEDEF:
+        case LONG: {
+
+            program1=new Program(nullptr, nullptr, nullptr);
+
+            Type* type1= type();
+            Pointer *pointer1 = pointer(type1);
+
+
+            Token *idToken = this->token;
+            matchOrSync(ID, F_program);
+
+            declsulfix(program1, type1, pointer1, idToken);
+
+            break;
+        }
+        case TYPEDEF: {
             typedecl();
-            program(); break;
-        case CMMEOF:
+            program();
+            break;
+        }
+        case CMMEOF: {
             match(CMMEOF);
-            return;
+        }
 
         default: sync(F_program);
 
     }
-
-}
-
-int F_declPrefix[]={5,LEFTPARENTHESES,SEMICOLON,LEFTBRACKET,COMMA, CMMEOF};
-
-void Parser::declprefix() {
-
-    fprintf(stdout,"DeclPrefix\n");
-    switch (this->token->token) {
-        case INT:
-        case LONG:
-        case FLOAT:
-        case DOUBLE:
-        case CHAR:
-        case BOOL:
-        case ID:
-            type();
-            pointer();
-            matchOrSync(ID,F_declPrefix);
-            break;
-        default:sync(F_declPrefix);
-
-
-
-    }
+    return program1;
 
 }
 
 int F_declSulfix[]={1,CMMEOF};
 
-void Parser::declsulfix() {
+void Parser::declsulfix(Program *program, Type *type, Pointer *pointer, Token *id) {
 
     fprintf(stdout,"DeclSulfix\n");
     switch (this->token->token){
 
-        case LEFTPARENTHESES:
-            functionDecl();
-            program2();
-            break;
+        case LEFTPARENTHESES: {
+            FunctionList *functionList1 = new FunctionList(nullptr, id, nullptr, nullptr, nullptr, nullptr);
 
+            if(pointer!= nullptr){
+                functionList1->type=pointer;
+            }else{
+                functionList1->type=type;
+            }
+
+            functionDecl(functionList1);
+            //TODO HERE
+            program->functionList=functionList1;
+            program2(program, functionList1, nullptr, nullptr);
+            break;
+        }
         case LEFTBRACKET:
         case COMMA:
         case SEMICOLON:
             varDeclSulfix();
-            program();
+            //TODO program();
             break;
         default:
             sync(F_declSulfix);
@@ -140,7 +141,7 @@ void Parser::declsulfix() {
 
 int F_program2[]={1,CMMEOF};
 
-void Parser::program2(){
+void Parser::program2(Program *program1, FunctionList *functionList, VarList *varList, TypeList *typeList) {
 
     fprintf(stdout,"Program2\n");
 
@@ -152,15 +153,39 @@ void Parser::program2(){
         case FLOAT:
         case INT:
         case LONG:
-        case TYPEDEF:
-            program();
+        case TYPEDEF: {
+            Program *program2 = program();
+            program2->pointed=true;
+
+            if(functionList!= nullptr) {
+                functionList->functionList = program1->functionList;
+            }else{
+                program1->functionList=program1->functionList;
+            }
+
+            if(functionList!= nullptr) {
+                varList->varList = program1->varList;
+            }else{
+                program2->varList=program1->varList;
+            }
+
+            if(functionList!= nullptr) {
+                typeList->typeList = program1->typeList;
+            }else{
+                program1->typeList=program2->typeList;
+            }
+
+            delete program2;
             break;
-        case CMMEOF:
-            match(CMMEOF);
+        }
+        case CMMEOF: {
+            //match(CMMEOF);
             //epsilon
             return;
-        default:
+        }
+        default: {
             sync(F_program2);
+        }
     }
 }
 
@@ -197,7 +222,7 @@ void Parser::varDecl2(){
         case ID:
         case CHAR:
             type();
-            pointer();
+            pointer(nullptr);
             matchOrSync(ID,F_varDecl2);
             array();
             idList2();
@@ -215,16 +240,22 @@ void Parser::varDecl2(){
 
 int F_functionDecl[]={9,TYPEDEF,LONG,INT,FLOAT,BOOL,ID,CHAR,DOUBLE,CMMEOF};
 
-void Parser::functionDecl(){
+void Parser::functionDecl(FunctionList *functionList) {
 
     fprintf(stdout,"FunctionDecl\n");
     switch (this->token->token) {
         case LEFTPARENTHESES:
             match(LEFTPARENTHESES);
-            formalList();
+
+            formalList(functionList);
+
             matchOrSync(RIGHTPARENTHESES,F_functionDecl);
             matchOrSync(LEFTBRACE,F_functionDecl);
-            functionBody();
+
+            //-
+            functionBody(functionList, functionList->varList2, functionList->stmtList);
+
+
             matchOrSync(RIGHTBRACE,F_functionDecl);
             break;
         default: sync(F_functionDecl);
@@ -236,7 +267,7 @@ void Parser::functionDecl(){
 int F_functionBody[]={2,RIGHTBRACE,CMMEOF};
 
 
-void Parser::functionBody() {
+void Parser::functionBody(FunctionList *functionList, VarList *varList2, StmtList *stmtList) {
 
     fprintf(stdout,"FunctionBody\n");
     switch (this->token->token) {
@@ -245,19 +276,41 @@ void Parser::functionBody() {
         case FLOAT:
         case BOOL:
         case CHAR:
-        case DOUBLE:
-            typeCompl();
-            pointer();
-            matchOrSync(ID,F_functionBody);
-            array();
-            idList2();
-            matchOrSync(SEMICOLON,F_functionBody);
-            functionBody();
+        case DOUBLE: {
+
+            TypePrimitive *typePrimitive1 = typeCompl();
+            Pointer* pointer1=pointer(typePrimitive1);
+
+            Token * tokenId=this->token;
+            matchOrSync(ID, F_functionBody);
+
+            typePrimitive1->size=array();
+
+            VarList* varList1= nullptr;
+
+            if(pointer1== nullptr){
+                varList1=new VarList(new NameDecl(typePrimitive1,tokenId),idList2());
+            }else{
+                varList1=new VarList(new NameDecl(pointer1,tokenId),idList2());
+            }
+
+            if(functionList->varList2== nullptr){
+                functionList->varList2=varList1;
+            }else{
+                varList2->varList=varList1;
+            }
+
+
+            matchOrSync(SEMICOLON, F_functionBody);
+
+            functionBody(functionList, varList1, stmtList);
             break;
-        case ID:
+        }
+        case ID: {
             match(ID);
             functionBody2();
             break;
+        }
         case PLUS:
         case NOT:
         case MINUS:
@@ -278,15 +331,18 @@ void Parser::functionBody() {
         case SWITCH:
         case WHILE:
         case IF:
-        case STRUCT:
+        case STRUCT: {
             stmtCompl();
             stmtList2();
             break;
-        case RIGHTBRACE:
+        }
+        case RIGHTBRACE: {
             //epsilon
             return;
-        default:
+        }
+        default: {
             sync(F_functionBody);
+        }
 
 
 
@@ -304,7 +360,7 @@ void Parser::functionBody2() {
             array();
             idList2();
             matchOrSync(SEMICOLON,F_functionBody2);
-            functionBody();
+            functionBody(nullptr, nullptr, nullptr);
             break;
         case PLUS:
         case MINUS:
@@ -411,11 +467,11 @@ void Parser::functionBody3() {
             match(COMMA);
             idList2();
             matchOrSync(SEMICOLON,F_functionBody3);
-            functionBody();
+            functionBody(nullptr, nullptr, nullptr);
             break;
         case SEMICOLON:
             match(SEMICOLON);
-            functionBody();
+            functionBody(nullptr, nullptr, nullptr);
             break;
         default:
             sync(F_functionBody3);
@@ -431,7 +487,7 @@ void Parser::idList(){
     switch (this->token->token) {
         case ID:
         case MULT:
-            pointer();
+            pointer(nullptr);
             matchOrSync(ID,F_idList);
             array();
             idList2();
@@ -444,26 +500,44 @@ void Parser::idList(){
 
 int F_idList2[]={2,SEMICOLON, CMMEOF};
 
-void Parser::idList2(){
+VarList * Parser::idList2(){
 
     fprintf(stdout,"IdList2\n");
-    switch (this->token->token)
-    {
-        case COMMA:
+    VarList* varList1= nullptr;
+    switch (this->token->token){
+        case COMMA: {
             match(COMMA);
-            pointer();
-            matchOrSync(ID,F_idList2);
-            array();
-            idList2();
+
+            Pointer *pointer1 = pointer(nullptr);
+
+            Token *tokenId = this->token;
+            matchOrSync(ID, F_idList2);
+
+
+            Array* array1=array();
+
+            TypeId* typeId1=new TypeId(tokenId, array1);
+
+            if(pointer1!= nullptr) {
+                pointer1->type = typeId1;
+                varList1=new VarList(new NameDecl(pointer1,tokenId), idList2());
+            }else{
+                varList1=new VarList(new NameDecl(typeId1,tokenId), idList2());
+            }
+
             break;
-
-        case SEMICOLON:
+        }
+        case SEMICOLON: {
             //epsilon
-            return;
+            break;
+        }
 
-        default:
+        default: {
             sync(F_idList2);
+        }
     }
+
+    return varList1;
 
 
 
@@ -496,31 +570,40 @@ void Parser::typedecl() {
 
 int F_array[]={4,RIGHTPARENTHESES,SEMICOLON,COMMA,CMMEOF};
 
-void Parser::array() {
+Array * Parser::array() {
 
     fprintf(stdout,"Array\n");
+    Array* array1= nullptr;
     switch (this->token->token) {
-        case LEFTBRACKET:
+        case LEFTBRACKET: {
             match(LEFTBRACKET);
-            matchOrSync(NUMINT,F_array);
-            matchOrSync(RIGHTBRACKET,F_array);
-            array();
-            break;
 
+            array1 = new Array(new ExpVal(this->token), nullptr);
+            matchOrSync(NUMINT, F_array);
+
+            matchOrSync(RIGHTBRACKET, F_array);
+
+            array1->array = array();
+
+            break;
+        }
         case RIGHTPARENTHESES:
         case SEMICOLON:
-        case COMMA:
+        case COMMA: {
             //epsilon
-            return;
-        default:
+            break;
+        }
+        default: {
             sync(F_array);
+        }
     }
+    return array1;
 
 }
 
 int F_formalList[]={2,RIGHTPARENTHESES,CMMEOF};
 
-void Parser::formalList(){
+void Parser::formalList(FunctionList *functionList) {
 
     fprintf(stdout,"FormalList\n");
     switch (this->token->token)
@@ -531,20 +614,39 @@ void Parser::formalList(){
         case BOOL:
         case ID:
         case CHAR:
-        case DOUBLE:
-            type();
-            pointer();
-            matchOrSync(ID,F_formalList);
-            array();
-            formalRest();
-            break;
+        case DOUBLE: {
 
-        case RIGHTPARENTHESES:
+            Type *type1 = type();
+            Pointer *pointer1 = pointer(type1);
+
+            Token *idToken = this->token;
+            matchOrSync(ID, F_formalList);
+
+            Array *array1 = array();
+
+            VarList* varList1=new VarList(new NameDecl(nullptr, nullptr), nullptr);
+
+            if(pointer1== nullptr){
+                varList1->nameDecl->type=pointer1;
+            }else{
+                varList1->nameDecl->type=type1;
+            }
+
+            varList1->nameDecl->id=idToken;
+
+            varList1->varList= formalRest();
+
+            functionList->varList1=varList1;
+
+            break;
+        }
+        case RIGHTPARENTHESES: {
             //epsilon
             return;
-
-        default:
+        }
+        default: {
             sync(F_formalList);
+        }
     }
 
 
@@ -552,28 +654,43 @@ void Parser::formalList(){
 
 int F_formalRest[]={2,RIGHTPARENTHESES,CMMEOF};
 
-void Parser::formalRest(){
+VarList * Parser::formalRest() {
 
     fprintf(stdout,"FormalRest\n");
+    VarList* varList1= nullptr;
     switch (this->token->token)
     {
-        case COMMA:
+        case COMMA: {
             match(COMMA);
-            type();
-            pointer();
-            matchOrSync(ID,F_formalRest);
-            array();
-            formalRest();
+
+            Type *type1 = type();
+            Pointer *pointer1 = pointer(type1);
+
+            Token *idToken = this->token;
+            matchOrSync(ID, F_formalRest);
+
+            Array *array1 = array();
+
+            varList1 = new VarList(new NameDecl(nullptr, nullptr), nullptr);
+
+            if (pointer1 == nullptr) {
+                varList1->nameDecl->type = pointer1;
+            } else {
+                varList1->nameDecl->type = type1;
+            }
+            varList1->nameDecl->id = idToken;
+
+            varList1->varList = formalRest();
             break;
-
-        case RIGHTPARENTHESES:
+        }
+        case RIGHTPARENTHESES: {
             //epsilon
-            return;
-
+            break;
+        }
         default:
             sync(F_formalRest);
     }
-
+    return varList1;
 
 }
 
@@ -1574,7 +1691,6 @@ int F_expr_l[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,
 void Parser::expr_l(){
 
     fprintf(stdout,"Expr_l\n");
-
     switch (this->token->token) {
         case ASSIGN:
             match(ASSIGN);
@@ -1609,7 +1725,6 @@ void Parser::expr_l(){
             sync(F_expr_l);
 
     }
-
 }
 
 int F_expr1[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
@@ -2099,7 +2214,7 @@ void Parser::expr7() {
             sync(F_expr7);
     }
 
-    //	leftparentheses id num literal ascii ampersand mult true false
+    //	leftparentheses primitive num literal ascii ampersand mult true false
 }
 
 int F_expr8[]={24,SEMICOLON,ASSIGN,OR,AND,EQ,NEQ,LESS,LEQ,GREAT,GEQ,PLUS,MINUS,PIPE,MULT,DIV,MOD,AMPERSAND,COMMA,POINTER,POINT,LEFTBRACKET,RIGHTBRACKET,RIGHTPARENTHESES,CMMEOF};
@@ -2290,92 +2405,131 @@ void Parser::unaryOp() {
 
 int F_pointer[]={2,ID,CMMEOF};
 
-void Parser::pointer() {
+Pointer * Parser::pointer(Type *type) {
 
     fprintf(stdout,"Pointer\n");
+    Pointer* pointer1= nullptr;
     switch (this->token->token) {
-        case MULT:
+        case MULT: {
+            pointer1=new Pointer(type);
             match(MULT);
             break;
-        case ID:
+        }
+        case ID: {
             //epsilon
-            return;
-        default: sync(F_pointer);
+            break;
+        }
+        default:{
+            sync(F_pointer);
+        }
     }
+    return pointer1;
+
 }
 
 int F_type[]={3,POINTER,ID,CMMEOF};
 
-void Parser::type() {
+Type * Parser::type() {
 
     fprintf(stdout,"Type\n");
-
+    Type* type1= nullptr;
     switch(this->token->token){
-        case LONG:
+        case LONG: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(LONG);
             break;
-        case INT:
+        }
+        case INT: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(INT);
             break;
-        case FLOAT:
+        }
+        case FLOAT: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(FLOAT);
             break;
-        case BOOL:
+        }
+        case BOOL: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(BOOL);
             break;
-        case ID:
+        }
+        case ID: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(ID);
             break;
-        case CHAR:
+        }
+        case CHAR: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(CHAR);
             break;
-        case DOUBLE:
+        }
+        case DOUBLE: {
+            type1=new TypePrimitive(this->token, nullptr);
             match(DOUBLE);
             break;
-        default:
+        }
+        default: {
             sync(F_type);
+        }
 
     }
+    return type1;
 }
 
 int F_typeCompl[]={3,POINTER,ID,CMMEOF};
 
-void Parser::typeCompl() {
+TypePrimitive * Parser::typeCompl() {
 
     fprintf(stdout,"TypeCompl\n");
+    TypePrimitive* typePrimitive1= nullptr;
     switch(this->token->token){
-        case LONG:
+        case LONG: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(LONG);
             break;
-        case INT:
+        }
+        case INT: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(INT);
             break;
-        case FLOAT:
+        }
+        case FLOAT: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(FLOAT);
             break;
-        case BOOL:
+        }
+        case BOOL: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(BOOL);
             break;
-        case CHAR:
+        }
+        case CHAR: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(CHAR);
             break;
-        case DOUBLE:
+        }
+        case DOUBLE: {
+            typePrimitive1 = new TypePrimitive(this->token, nullptr);
             match(DOUBLE);
             break;
-        default:
+        }
+        default: {
             sync(F_typeCompl);
+        }
 
     }
+    return typePrimitive1;
 }
 
 
 void c_parse() {
-    Parser::parse();
+    //Parser::parse();
 }
 
 char* Parser::translate(int token) {
     switch (token) {
-        case ID: return "id";
+        case ID: return "primitive";
         case SEMICOLON: return ";";
         case COLON: return ":";
         case MOD: return "%";

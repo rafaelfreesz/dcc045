@@ -5,6 +5,7 @@
 #ifndef CMMCOMPILER_PARSER_H
 #define CMMCOMPILER_PARSER_H
 #include "LexicalAnalyzer.h"
+#include "Visitor.h"
 #include <iostream>
 #define FIRSTTOKEN  -1
 
@@ -15,29 +16,31 @@ using namespace std;
 class Parser {
 public:
 
-    static void parse(); //Depois vai retornar a raiz da arvore
+    Parser();
+    ~Parser();
+
+    void parse(); //Depois vai retornar a raiz da arvore
     void match(int token);
     void matchOrSync(int token, int *nonTeminal);
     void sync(int* nonTerminal);
 
     //Nonterminal functions
-    void program() ;
-    void program2();
-    void declprefix();
-    void declsulfix() ;
+    Program * program();
+    void program2(Program *program1, FunctionList *functionList, VarList *varList, TypeList *typeList);
+    void declsulfix(Program *program, Type *type, Pointer *pointer, Token *id);
     void varDeclSulfix();
     void varDecl2();
-    void functionDecl();
-    void functionBody();
+    void functionDecl(FunctionList *functionList);
+    void functionBody(FunctionList *functionList, VarList *varList2, StmtList *stmtList);
     void functionBody2();
     void functionBody3();
     void binOp();
     void idList();
-    void idList2();
+    VarList * idList2();
     void typedecl() ;
-    void array() ;
-    void formalList();
-    void formalRest();
+    Array * array() ;
+    void formalList(FunctionList *functionList);
+    VarList* formalRest();
     void stmt();
     void stmtCompl();
     void stmtList();
@@ -79,16 +82,16 @@ public:
     void primary2() ;
     void primary3() ;
     void unaryOp() ;
-    void pointer();
-    void type() ;
-    void typeCompl() ;
+    Pointer * pointer(Type *type);
+    Type * type();
+    TypePrimitive * typeCompl() ;
     char* translate(int token);
 
 
 private:
-    Parser();
-    ~Parser();
     Token* token;
+    Program* root;
+    ConcreteVisitor* visitor;
 
 };
 

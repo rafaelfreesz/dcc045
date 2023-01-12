@@ -5,9 +5,9 @@
 #include "Visitor.h"
 //---- Program----
 Program::Program(FunctionList *functionList, TypeList *typeList, VarList *varList) {
-    this->functionList=functionList;
-    this->typeList=typeList;
-    this->varList=varList;
+    this->functionList=this->lastFunctionList=functionList;
+    this->typeList=lastTypeList=typeList;
+    this->varList=lastVarList=varList;
 }
 
 Program::~Program() {
@@ -15,7 +15,6 @@ Program::~Program() {
     delete this->typeList;
     delete this->varList;
 }
-
 //---- VarList----
 VarList::VarList(NameDecl *nameDecl, VarList *varList) {
     this->nameDecl= nameDecl;
@@ -39,10 +38,12 @@ NameDecl::~NameDecl() {
 }
 
 //---- FunctionList----
-FunctionList::FunctionList(Type *type, Token *id, VarList *varList, StmtList *stmtList, FunctionList *functionList) {
+FunctionList::FunctionList(Type *type, Token *id, VarList *varList1, VarList *varList2, StmtList *stmtList,
+                           FunctionList *functionList) {
     this->type=type;
     this->id=id;
-    this->varList=varList;
+    this->varList1=varList1;
+    this->varList2=varList2;
     this->stmtList=stmtList;
     this->functionList=functionList;
 }
@@ -65,16 +66,23 @@ TypeList::~TypeList() {
 }
 
 //---- Type----
-Type::Type(Token *idOrPrimitive, Token *size, Pointer *pointer) {
-    this->idOrPrimitive=idOrPrimitive;
+TypeId::TypeId(Token* id, Array* size) {
+    this->id=id;
     this->size=size;
-    this->pointer=pointer;
 }
 
-Type::~Type() {
-    delete this->idOrPrimitive;
+TypeId::~TypeId() {
+    delete this->id;
     delete this->size;
-    delete this->pointer;
+}
+TypePrimitive::TypePrimitive(Token *primitive, Array *size) {
+    this->primitive=primitive;
+    this->size=size;
+}
+
+TypePrimitive::~TypePrimitive() {
+    delete this->primitive;
+    delete this->size;
 }
 
 //---- Pointer----
@@ -256,14 +264,14 @@ PointerValue::~PointerValue() {
 }
 
 //---- Array----
-Array::Array(Exp *exp, ExpList *expList) {
+Array::Array(Exp *exp, Array *array) {
     this->exp=exp;
-    this->expList=expList;
+    this->array=array;
 }
 
 Array::~Array() {
     delete this->exp;
-    delete this->expList;
+    delete this->array;
 }
 
 //---- Call----
@@ -357,3 +365,259 @@ Sign::~Sign() {
 }
 
 //------------Concrete Visitors---------------//
+void ConcreteVisitor::visit(Program *program) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+
+    this->depth++;
+
+    fprintf(stdout,"PROGRAM\n");
+    if(program->functionList!= nullptr) {
+        visit(program->functionList);
+    }
+    if(program->typeList!= nullptr) {
+        visit(program->typeList);
+    }
+    if(program->varList!= nullptr) {
+        visit(program->varList);
+    }
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(VarList *varList) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    
+    this->depth++;
+    
+    fprintf(stdout,"VARLIST\n");
+    visit(varList->nameDecl);
+    if(varList->varList!= nullptr){
+        visit(varList->varList);
+    }
+    
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(NameDecl *nameDecl) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    
+    fprintf(stdout,"NAMEDECL\n ");
+    visit(nameDecl->type);
+    visit(nameDecl->id);
+    
+    this->depth--;
+
+}
+
+void ConcreteVisitor::visit(FunctionList *functionList) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    
+    this->depth++;
+    
+    fprintf(stdout,"FUNCTIONLIST\n ");
+    visit(functionList->type);
+    visit(functionList->id);
+    if(functionList->varList1!=nullptr) {
+        visit(functionList->varList1);
+    }
+    if(functionList->varList2!=nullptr) {
+        visit(functionList->varList2);
+    }
+
+    visit(functionList->stmtList);
+    if(functionList->functionList!= nullptr) {
+        visit(functionList->functionList);
+    }
+    
+    this->depth--;
+
+}
+
+void ConcreteVisitor::visit(TypeList *typeList) {
+
+}
+
+void ConcreteVisitor::visit(Type *type) {
+
+}
+
+void ConcreteVisitor::visit(TypeId *typeId) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    fprintf(stdout,"TYPEID ");
+    printToken(typeId->id);
+    visit(typeId->size);
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(TypePrimitive *typePrimitive) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    fprintf(stdout,"TYPEPRIMITIVE ");
+    printToken(typePrimitive->primitive);
+    visit(typePrimitive->size);
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(Pointer *pointer) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    fprintf(stdout,"POINTER\n");
+    visit(pointer->type);
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(StmtList *stmtList) {
+
+}
+
+void ConcreteVisitor::visit(Stmt *stmt) {
+
+}
+
+void ConcreteVisitor::visit(If *anIf) {
+
+}
+
+void ConcreteVisitor::visit(While *aWhile) {
+
+}
+
+void ConcreteVisitor::visit(Switch *aSwitch) {
+
+}
+
+void ConcreteVisitor::visit(Break *aBreak) {
+
+}
+
+void ConcreteVisitor::visit(PrintLn *printLn) {
+
+}
+
+void ConcreteVisitor::visit(Read *read) {
+
+}
+
+void ConcreteVisitor::visit(Return *aReturn) {
+
+}
+
+void ConcreteVisitor::visit(CaseBlock *caseBlock) {
+
+}
+
+void ConcreteVisitor::visit(Throw *aThrow) {
+
+}
+
+void ConcreteVisitor::visit(ExpList *expList) {
+
+}
+
+void ConcreteVisitor::visit(Try *aTry) {
+
+}
+
+void ConcreteVisitor::visit(Exp *exp) {
+
+}
+
+void ConcreteVisitor::visit(ExpVal *expVal) {
+
+}
+
+void ConcreteVisitor::visit(Assign *assign) {
+
+}
+
+void ConcreteVisitor::visit(NameExp *nameExp) {
+
+}
+
+void ConcreteVisitor::visit(PointerValueExp *pointerValueExp) {
+
+}
+
+void ConcreteVisitor::visit(AdressValue *adressValue) {
+
+}
+
+void ConcreteVisitor::visit(PointerValue *pointerValue) {
+
+}
+
+void ConcreteVisitor::visit(Array *array) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    fprintf(stdout,"ARRAY\n");
+    visit(array->exp);
+    visit(array->array);
+    this->depth--;
+}
+
+void ConcreteVisitor::visit(Call *aConst) {
+
+}
+
+void ConcreteVisitor::visit(RelationalOp *relationalOp) {
+
+}
+
+void ConcreteVisitor::visit(AditionOp *aditionOp) {
+
+}
+
+void ConcreteVisitor::visit(MultiplicationOp *multiplicationOp) {
+
+}
+
+void ConcreteVisitor::visit(BooleanOp *booleanOp) {
+
+}
+
+void ConcreteVisitor::visit(BitwiseOp *bitwiseOp) {
+
+}
+
+void ConcreteVisitor::visit(True *aTrue) {
+
+}
+
+void ConcreteVisitor::visit(False *aFalse) {
+
+}
+
+void ConcreteVisitor::visit(Not *aNot) {
+
+}
+
+void ConcreteVisitor::visit(Sign *sign) {
+
+}
+
+void ConcreteVisitor::visit(Token *token) {
+    for(int i=0;i<this->depth;i++){
+        fprintf(stdout," ");
+    }
+    this->depth++;
+    fprintf(stdout,"TOKEN ");
+    printToken(token);
+    this->depth--;
+}

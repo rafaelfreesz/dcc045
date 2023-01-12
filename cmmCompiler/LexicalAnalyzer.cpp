@@ -72,7 +72,7 @@ void loadStream() {
 
 }
 
-//Search and Return the next required id
+//Search and Return the next required primitive
 Token* nextToken(){
     Token* token = (Token*)malloc(sizeof(Token));
 
@@ -84,7 +84,7 @@ Token* nextToken(){
 
     char characterFound = getBufferCharacter(ADVANCE);
 
-    //Lookup the next id from a deterministic automaton
+    //Lookup the next primitive from a deterministic automaton
     while(!foundToken){
 
         //Realloc lexem string if needed

@@ -1,4 +1,22 @@
-int func(){
+int func(int x,int y,int z){
+
+    int b;
+    b = func(a) + 2;
+
+    if(a == 2){
+        a = 3;
+    }else if(true){
+        b = 2;
+        return 0;
+    } else { b=3;}
+
+    while(a == 4){
+        a = 5 * (7 / 9);
+    }
+
+
+}
+int func(int x,int y,int z){
 
     int b;
     b = func(a) + 2;

@@ -13,6 +13,9 @@ class NameDecl;
 class FunctionList;
 class TypeList;
 class Type;
+class TypeId;
+class TypePrimitive;
+class TypePointer;
 class Pointer;
 class StmtList;
 class Stmt;
@@ -48,13 +51,15 @@ class Sign;
 
 class Visitor {
 public:
-    Visitor();
+    Visitor(){};
     virtual void visit (Program* program )=0;
     virtual void visit (VarList* varList)=0;
     virtual void visit (NameDecl* nameDecl)=0;
     virtual void visit (FunctionList* functionList)=0;
     virtual void visit (TypeList* typeList)=0;
     virtual void visit (Type* type)=0;
+    virtual void visit (TypeId* typeId)=0;
+    virtual void visit (TypePrimitive* typePrimitive)=0;
     virtual void visit (Pointer* pointer)=0;
     virtual void visit (StmtList* stmtList)=0;
     virtual void visit (Stmt* stmt)=0;
@@ -87,12 +92,13 @@ public:
     virtual void visit (False* aFalse)=0;
     virtual void visit (Not* aNot)=0;
     virtual void visit (Sign* sign)=0;
+    virtual void visit (Token* token)=0;
 
 };
 
 class ConcreteVisitor: public Visitor{
 public:
-    ConcreteVisitor();
+    ConcreteVisitor(){this->depth=0;};
     ~ConcreteVisitor();
     void visit (Program* program ) override;
     void visit (VarList* varList) override;
@@ -100,6 +106,8 @@ public:
     void visit (FunctionList* functionList) override;
     void visit (TypeList* typeList) override;
     void visit (Type* type) override;
+    void visit (TypeId* typeId) override;
+    void visit (TypePrimitive* typePrimitive) override;
     void visit (Pointer* pointer) override;
     void visit (StmtList* stmtList) override;
     void visit (Stmt* stmt) override;
@@ -132,6 +140,8 @@ public:
     void visit (False* aFalse) override;
     void visit (Not* aNot) override;
     void visit (Sign* sign) override;
+    void visit (Token* token) override;
+    int depth;
     
 };
 
@@ -149,8 +159,12 @@ public:
     ~Program();
 
     FunctionList* functionList;
+    FunctionList* lastFunctionList;
     TypeList* typeList;
+    TypeList* lastTypeList;
     VarList* varList;
+    VarList* lastVarList;
+    bool pointed;
     void accept(Visitor* v) override {v->visit(this);};
 
 };
@@ -177,12 +191,14 @@ public:
 class FunctionList: public Root{
 public:
 
-    FunctionList(Type* type, Token* id, VarList* varList, StmtList* stmtList, FunctionList* functionList);
+    FunctionList(Type *type, Token *id, VarList *varList1, VarList *varList2, StmtList *stmtList,
+                 FunctionList *functionList);
     ~FunctionList();
 
     Type* type;
     Token* id;
-    VarList* varList;
+    VarList* varList1;
+    VarList* varList2;
     StmtList* stmtList;
     FunctionList* functionList;
 
@@ -203,17 +219,37 @@ public:
 class Type: public Root{
 public:
 
-    Type(Token* idOrPrimitive, Token* size, Pointer* pointer);
-    ~Type();
-
-    Token* idOrPrimitive;
-    Token* size;
-    Pointer* pointer;
+    Type(){ printf("\t\tAST_TYPE\n");};
+    ~Type(){};
 
     void accept(Visitor* v) override {v->visit(this);};
 
 };
-class Pointer: public Root{
+class TypeId: public Type{
+public:
+
+    TypeId(Token* id, Array* size);
+    ~TypeId();
+
+    Token* id;
+    Array* size;
+
+    void accept(Visitor* v) override {v->visit(this);};
+
+};
+class TypePrimitive: public Type{
+public:
+
+    TypePrimitive(Token *primitive, Array *size);
+    ~TypePrimitive();
+
+    Token* primitive;
+    Array* size;
+
+    void accept(Visitor* v) override {v->visit(this);};
+
+};
+class Pointer: public Type{
 public:
     Pointer(Type* type);
     ~Pointer();
@@ -365,6 +401,7 @@ public:
 };
 
 class ExpVal: public Exp{
+public:
     ExpVal(Token* val);
     ~ExpVal();
 
@@ -431,11 +468,11 @@ public:
 
 class Array: public Exp{
 public:
-    Array(Exp* exp, ExpList* expList);
+    Array(Exp* exp, Array *array);
     ~Array();
 
     Exp* exp;
-    ExpList* expList;
+    Array* array;
 
     void accept(Visitor* v) override {v->visit(this);};
 
