@@ -154,28 +154,7 @@ void Parser::program2(Program *program1, FunctionList *functionList, VarList *va
         case INT:
         case LONG:
         case TYPEDEF: {
-            Program *program2 = program();
-            program2->pointed=true;
-
-            if(functionList!= nullptr) {
-                functionList->functionList = program1->functionList;
-            }else{
-                program1->functionList=program1->functionList;
-            }
-
-            if(functionList!= nullptr) {
-                varList->varList = program1->varList;
-            }else{
-                program2->varList=program1->varList;
-            }
-
-            if(functionList!= nullptr) {
-                typeList->typeList = program1->typeList;
-            }else{
-                program1->typeList=program2->typeList;
-            }
-
-            delete program2;
+            program();
             break;
         }
         case CMMEOF: {

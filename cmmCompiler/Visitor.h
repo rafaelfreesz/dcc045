@@ -159,12 +159,8 @@ public:
     ~Program();
 
     FunctionList* functionList;
-    FunctionList* lastFunctionList;
     TypeList* typeList;
-    TypeList* lastTypeList;
     VarList* varList;
-    VarList* lastVarList;
-    bool pointed;
     void accept(Visitor* v) override {v->visit(this);};
 
 };

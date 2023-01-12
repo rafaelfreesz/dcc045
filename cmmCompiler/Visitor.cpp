@@ -5,9 +5,9 @@
 #include "Visitor.h"
 //---- Program----
 Program::Program(FunctionList *functionList, TypeList *typeList, VarList *varList) {
-    this->functionList=this->lastFunctionList=functionList;
-    this->typeList=lastTypeList=typeList;
-    this->varList=lastVarList=varList;
+    this->functionList=functionList;
+    this->typeList=typeList;
+    this->varList=varList;
 }
 
 Program::~Program() {
